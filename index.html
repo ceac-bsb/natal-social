@@ -1,191 +1,264 @@
 <!doctype html>
 <html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Natal Social 2026</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Natal Social 2026 do CEAC: ajude a fazer o Natal de 20 famílias da Estrutural mais feliz. Doe pelo PIX ou ajude nas visitas.">
+<title>Natal Social 2026 · CEAC</title>
+<meta name="description" content="Ajude a fazer o Natal de 20 famílias da Cidade Estrutural mais feliz. Doe pelo PIX ou vá com a gente nas visitas.">
 <meta name="theme-color" content="#F4F4EF">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Natal Social 2026 · CEAC">
+<meta property="og:description" content="Ajude a fazer o Natal de 20 famílias da Cidade Estrutural mais feliz. Doe pelo PIX ou vá com a gente nas visitas.">
+<meta property="og:image" content="https://ceac-bsb.github.io/natal-social/og.png">
+<meta property="og:url" content="https://ceac-bsb.github.io/natal-social/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap">
 <style>
-/* Layout: coluna única de leitura no celular; seções separadas por fio, sem cards em tudo */
+/* Layout: uma tela por etapa (entrada → como ajudar → doar | visitas). Celular: coluna única. Computador: duas colunas. */
 :root{
-  --papel:#F4F4EF; --tinta:#1A1F1B; --suave:#5E655F; --fio:#1A1F1B26;
-  --laco:#1D6B3A; --janela:#F2B33D; --campo:#FFFFFF;
-  --disp:'Quicksand',system-ui,sans-serif; --corpo:'Quicksand',system-ui,sans-serif;
+  --papel:#F4F4EF; --cartao:#FFFFFF; --tinta:#1A1F1B; --suave:#5E655F; --fio:#1A1F1B1F;
+  --verde:#1D6B3A; --verde-claro:#E3EFE6; --janela:#F2B33D;
+  --fonte:'Quicksand',system-ui,sans-serif;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--papel:#151815;--tinta:#ECEDE6;--suave:#A6ACA5;--fio:#ECEDE626;--laco:#5BB57A;--campo:#1F231F;color-scheme:dark}}
-:root[data-theme="dark"]{--papel:#151815;--tinta:#ECEDE6;--suave:#A6ACA5;--fio:#ECEDE626;--laco:#5BB57A;--campo:#1F231F;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--papel:#131613;--cartao:#1C201C;--tinta:#ECEDE6;--suave:#A6ACA5;--fio:#ECEDE61F;--verde:#6CC08A;--verde-claro:#1F3326;color-scheme:dark}}
+:root[data-theme="dark"]{--papel:#131613;--cartao:#1C201C;--tinta:#ECEDE6;--suave:#A6ACA5;--fio:#ECEDE61F;--verde:#6CC08A;--verde-claro:#1F3326;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--corpo);font-weight:500;font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:560px;margin:0 auto;padding-block:28px 56px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
-.org{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
-.arte{display:block;width:calc(100% + 36px);margin:18px -18px 0;max-width:none}
-h1{font-family:var(--disp);font-weight:600;font-size:clamp(54px,16vw,84px);line-height:.92;letter-spacing:-.02em;margin:14px 0 0}
-h1 em{color:var(--laco);font-style:normal}
-.lead{font-size:19px;margin:16px 0 0;text-wrap:balance}
-.lead b{font-weight:600}
-section{border-top:1.5px solid var(--tinta);margin-top:40px;padding-top:18px}
-.rot{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
-h2{font-family:var(--disp);font-weight:600;font-size:34px;line-height:1;letter-spacing:-.01em;margin:8px 0 0;text-wrap:balance}
-h2 em{color:var(--laco);font-style:normal}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--fonte);font-weight:500;font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-block:24px 48px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.org{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.org a{color:inherit;text-decoration:none}
+h1{font-weight:600;font-size:clamp(52px,14vw,92px);line-height:.92;letter-spacing:-.02em;margin:0}
+h1 em,h2 em{font-style:normal;color:var(--verde)}
+h2{font-weight:700;font-size:clamp(28px,6.4vw,40px);line-height:1.08;letter-spacing:-.015em;margin:6px 0 0;text-wrap:balance}
 p{margin:12px 0 0}
+b{font-weight:700}
 .suave{color:var(--suave)}
-.tag-ex{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--laco);border:1px solid var(--laco);border-radius:99px;padding:2px 8px;margin-left:8px;vertical-align:3px}
+.rot{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.tela{display:none}
+.tela.on{display:block;animation:entra .35s ease}
+@keyframes entra{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.tela.on{animation:none}}
+
+/* cabeçalho */
+.hero{display:grid;gap:18px;align-items:end;margin-top:14px}
+.arte{display:block;width:calc(100% + 36px);margin:0 -18px;height:auto}
+.lead{font-size:clamp(18px,4.6vw,22px);margin-top:14px;text-wrap:balance}
+@media (min-width:860px){
+  .hero{grid-template-columns:1fr 1fr;gap:48px;margin-top:28px}
+  .hero .arte{width:100%;margin:0;order:2}
+}
+.duas{display:grid;gap:22px;margin-top:30px}
+@media (min-width:860px){.duas{grid-template-columns:1fr 1fr;gap:48px;margin-top:44px;align-items:start}}
+
+/* passos e botões */
+.passos{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:14px}
+.passos li{display:grid;grid-template-columns:30px 1fr;gap:10px}
+.passos .n{font-weight:700;font-size:26px;line-height:1.1;color:var(--verde)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font:700 17px var(--fonte);border-radius:14px;padding:16px;cursor:pointer;border:0;background:var(--verde);color:#fff;text-decoration:none}
+.btn.sec{background:transparent;color:var(--tinta);border:1.5px solid var(--tinta)}
+.btn:disabled{opacity:.4;cursor:default}
+.voltar{display:inline-flex;align-items:center;gap:6px;font:700 15px var(--fonte);color:var(--verde);background:none;border:0;padding:6px 0;cursor:pointer}
+:is(button,a,input,label):focus-visible{outline:2.5px solid var(--janela);outline-offset:2px}
+.cartao{background:var(--cartao);border:1px solid var(--fio);border-radius:20px;padding:20px}
 
 /* meta */
-.pct{font-family:var(--disp);font-weight:600;font-size:clamp(56px,17vw,84px);line-height:.95;margin-top:6px}
-.pct em{color:var(--laco);font-style:normal}
-.barra{position:relative;height:12px;background:var(--fio);border-radius:99px;margin-top:14px;overflow:hidden}
-.barra i{position:absolute;inset:0 auto 0 0;width:0;background:var(--laco);border-radius:99px;transition:width 1.2s ease}
-@media (prefers-reduced-motion:reduce){.barra i{transition:none}}
-.numeros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
-.numeros div{border-left:1.5px solid var(--fio);padding-left:10px}
-.numeros b{display:block;font-family:var(--disp);font-weight:700;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.pct{font-weight:700;font-size:clamp(40px,11vw,60px);line-height:1;letter-spacing:-.02em;margin-top:6px}
+.pct em{font-style:normal;color:var(--verde)}
+.barra{height:12px;background:var(--fio);border-radius:99px;margin-top:14px;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:var(--verde);border-radius:99px;transition:width 1.2s ease}
+.numeros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.numeros div{border-left:2px solid var(--fio);padding-left:10px;min-width:0}
+.numeros b{display:block;font-size:clamp(18px,5vw,24px);font-variant-numeric:tabular-nums;line-height:1.2}
 .numeros span{font-size:13px;color:var(--suave)}
 
+/* escolha */
+.escolhas{display:grid;gap:14px;margin-top:22px}
+@media (min-width:600px){.escolhas{grid-template-columns:1fr 1fr}}
+@media (min-width:860px){.duas .escolhas{grid-template-columns:1fr}}
+.escolha{display:grid;gap:6px;text-align:left;text-decoration:none;font:inherit;color:inherit;background:var(--cartao);border:1.5px solid var(--fio);border-radius:20px;padding:20px;cursor:pointer;transition:border-color .2s,transform .2s}
+.escolha:hover{border-color:var(--verde);transform:translateY(-2px)}
+.escolha .ic{width:44px;height:44px;border-radius:12px;background:var(--verde-claro);display:grid;place-items:center}
+.escolha .ic svg{width:24px;height:24px}
+.escolha b{font-size:21px;margin-top:6px}
+.escolha span{color:var(--suave);font-size:15px}
+.escolha .ir{color:var(--verde);font-weight:700;font-size:15px;margin-top:6px}
+
 /* doar */
-.chave{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--campo);border:1.5px solid var(--tinta);border-radius:14px;padding:14px 14px 14px 16px;margin-top:16px}
+.chave{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px;background:var(--cartao);border:1.5px solid var(--tinta);border-radius:14px;padding:14px 14px 14px 16px;margin-top:16px}
 .chave div{min-width:0}
 .chave small{display:block;font-size:12px;color:var(--suave)}
-.chave b{display:block;font-weight:600;font-size:17px;word-break:break-all}
-button,.btn{font:600 16px var(--corpo);border-radius:12px;cursor:pointer}
-.b-sec{flex:none;background:transparent;color:var(--tinta);border:1.5px solid var(--tinta);padding:10px 14px}
-.b-pri{display:block;width:100%;background:var(--laco);color:#fff;border:0;padding:15px;margin-top:12px}
-.b-pri:disabled{opacity:.4;cursor:default}
-button:focus-visible,input:focus-visible,label:focus-within{outline:2.5px solid var(--janela);outline-offset:2px}
-.valores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:18px}
-.valores button{background:transparent;color:var(--tinta);border:1.5px solid var(--fio);padding:12px 0;font-variant-numeric:tabular-nums}
-.valores button.on{border-color:var(--tinta);background:var(--tinta);color:var(--papel)}
-.outro{display:flex;align-items:center;gap:8px;margin-top:8px;border:1.5px solid var(--fio);border-radius:12px;padding:0 14px;background:var(--campo)}
-.outro span{font-weight:600}
-.outro input{flex:1;min-width:0;border:0;background:transparent;font:500 17px var(--corpo);color:var(--tinta);padding:13px 0;outline:none}
-#pix{margin-top:18px;text-align:center}
+.chave b{display:block;font-size:17px;white-space:nowrap}
+.chave button{flex:none;font:700 15px var(--fonte);color:var(--tinta);background:transparent;border:1.5px solid var(--tinta);border-radius:10px;padding:10px 14px;cursor:pointer}
+.valores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.valores button{font:700 16px var(--fonte);color:var(--tinta);background:var(--cartao);border:1.5px solid var(--fio);border-radius:12px;padding:12px 0;cursor:pointer;font-variant-numeric:tabular-nums}
+.valores button.on{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
+.outro{display:flex;align-items:center;gap:8px;margin-top:8px;border:1.5px solid var(--fio);border-radius:12px;padding:0 14px;background:var(--cartao)}
+.outro span{font-weight:700}
+.outro input{flex:1;min-width:0;border:0;background:transparent;font:600 17px var(--fonte);color:var(--tinta);padding:13px 0;outline:none}
+#gerar{margin-top:12px}
+#pix{margin-top:16px;text-align:center}
 #qr{width:200px;height:200px;margin:0 auto;background:#fff;padding:10px;border-radius:12px}
 #qr svg{width:100%;height:100%;display:block}
-.vpix{font-family:var(--disp);font-weight:700;font-size:34px;margin-top:8px}
-.codigo{font-size:12px;word-break:break-all;color:var(--suave);background:var(--campo);border-radius:10px;padding:10px;margin-top:10px;text-align:left}
+.vpix{font-weight:700;font-size:30px;margin:8px 0 10px}
+.codigo{font-size:12px;word-break:break-all;color:var(--suave);background:var(--papel);border-radius:10px;padding:10px;margin-top:10px;text-align:left}
 
 /* visitas */
-.datas{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding:0;list-style:none}
-.datas li{border:1.5px solid var(--tinta);border-radius:99px;padding:6px 12px;font-weight:600;font-size:15px;font-variant-numeric:tabular-nums}
+.datas{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none}
+.datas li{border:1.5px solid var(--tinta);border-radius:99px;padding:5px 12px;font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
 .datas li.foi{border-color:var(--fio);color:var(--suave);text-decoration:line-through}
-.datas li.final{background:var(--laco);border-color:var(--laco);color:#fff}
-.passos{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:14px}
-.passos li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
-.passos .n{font-family:var(--disp);font-weight:600;font-size:30px;line-height:1;color:var(--laco)}
-.passos b{font-weight:600}
-form{margin-top:22px;display:grid;gap:14px}
-.campo label,.grupo legend{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
-.campo input{width:100%;font:500 17px var(--corpo);color:var(--tinta);background:var(--campo);border:1.5px solid var(--fio);border-radius:12px;padding:12px 14px}
+.datas li.final{background:var(--verde);border-color:var(--verde);color:#fff}
+form{display:grid;gap:14px;margin-top:14px}
+.campo label,.grupo legend{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.campo input{width:100%;font:600 17px var(--fonte);color:var(--tinta);background:var(--papel);border:1.5px solid var(--fio);border-radius:12px;padding:12px 14px}
 .grupo{border:0;padding:0;margin:0}
 .opcoes{display:flex;flex-wrap:wrap;gap:8px}
-.opcoes label{display:flex;align-items:center;gap:8px;border:1.5px solid var(--fio);border-radius:12px;padding:10px 12px;font-size:15px;cursor:pointer;background:var(--campo)}
-.opcoes input{accent-color:var(--laco);width:18px;height:18px;margin:0}
-.opcoes label:has(input:checked){border-color:var(--tinta)}
-.ok{display:none;border:1.5px solid var(--tinta);border-radius:14px;padding:16px;margin-top:18px}
-.ok.on{display:block}
+.opcoes label{display:flex;align-items:center;gap:8px;border:1.5px solid var(--fio);border-radius:12px;padding:10px 12px;font-size:15px;cursor:pointer;background:var(--papel)}
+.opcoes input{accent-color:var(--verde);width:18px;height:18px;margin:0}
+.opcoes label:has(input:checked){border-color:var(--verde);background:var(--verde-claro)}
+.ok{border:1.5px solid var(--verde);background:var(--verde-claro);border-radius:14px;padding:16px;margin-top:14px}
 
-/* contatos */
-.contatos{display:grid;gap:0;margin-top:10px}
-.contatos a{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--fio);color:var(--tinta);text-decoration:none}
-.contatos a span:last-child{color:var(--laco);font-weight:600;font-variant-numeric:tabular-nums}
-footer{margin-top:36px;font-size:13px;color:var(--suave)}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,120px);background:var(--tinta);color:var(--papel);padding:12px 18px;border-radius:12px;font-size:15px;transition:transform .25s;z-index:5;max-width:calc(100% - 32px)}
+/* rodapé */
+footer{margin-top:44px;border-top:1.5px solid var(--tinta);padding-top:16px;display:grid;gap:14px;font-size:15px}
+@media (min-width:860px){footer{grid-template-columns:1fr auto;align-items:end}}
+.contatos{display:flex;flex-wrap:wrap;gap:8px 22px}
+.contatos a{color:var(--tinta);text-decoration:none;font-weight:600}
+.contatos a span{color:var(--verde);font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160px);background:var(--tinta);color:var(--papel);padding:12px 18px;border-radius:12px;font-size:15px;font-weight:600;transition:transform .25s;z-index:5;max-width:calc(100% - 32px)}
 .toast.on{transform:translate(-50%,0)}
 </style></head>
 <body>
 <main class="wrap">
-  <div class="org">Centro de Atividades Culturais - CEAC</div>
-  <svg class="arte" viewBox="0 0 200 82" fill="none" aria-hidden="true">
-    <g stroke="var(--laco)" stroke-width=".9">
-      <rect x="22" y="54" width="6" height="6" fill="var(--janela)"/><rect x="55" y="47" width="6" height="6"/><rect x="63" y="47" width="6" height="6" fill="var(--janela)"/><rect x="55" y="57" width="6" height="6" fill="var(--janela)"/><rect x="93" y="56" width="6" height="6" fill="var(--janela)"/><rect x="143" y="44" width="4" height="6"/><rect x="166" y="56" width="6" height="6" fill="var(--janela)"/><rect x="178" y="56" width="6" height="6" fill="var(--janela)"/>
-    </g>
-    <path d="M-2 72 H12 V50 L27 38 L42 50 V72 H49 V41 H74 V72 H80 V53 L96 39 L112 53 V72 H119 V47 H138 V36 H150 V72 H157 V51 L172 41 L187 51 V72 H202" stroke="var(--laco)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M93 72 V63 H99 V72" stroke="var(--laco)" stroke-width="1.1"/>
-  </svg>
-  <h1>Natal<br>Social <em>2026</em></h1>
-  <p class="lead">Ajude a fazer o Natal de <b id="leadFam">20 famílias</b> da Estrutural mais feliz. Entrega no sábado, <b>12/12</b>.</p>
+  <div class="org"><a href="#inicio">Centro de Atividades Culturais - CEAC</a></div>
 
-  <section id="intro" aria-labelledby="t-intro">
-    <div class="rot">O que é</div>
-    <h2 id="t-intro">Um Natal de verdade para quem <em>mais precisa</em></h2>
-    <p>O Natal Social é uma ação social e voluntária realizada pelo Centro de Atividades Culturais (CEAC), que visa levar brinquedos e cestas básicas a famílias da Cidade Estrutural, em Brasília, DF.</p>
-    <ol class="passos">
-      <li><span class="n">1</span><span><b>Visitas.</b> Nos sábados antes do Natal, voluntários visitam cada família em casa para conhecer quem mora ali e do que precisa.</span></li>
-      <li><span class="n">2</span><span><b>Arrecadação.</b> Com as doações, compramos as cestas básicas e os presentes de cada criança.</span></li>
-      <li><span class="n">3</span><span><b>Entrega, 12/12.</b> No sábado, 12 de dezembro, cada família recebe a cesta e os presentes.</span></li>
-    </ol>
-    <p>Este ano, a meta é chegar a <b id="introFam">20 famílias</b>. Você pode ajudar doando ou indo com a gente nas visitas.</p>
-    <button class="b-pri" id="quero" type="button">Quero ajudar</button>
-  </section>
-
-  <div id="painel" hidden>
-  <section id="meta" aria-labelledby="t-meta" hidden>
-    <div class="rot" id="t-meta">Meta de arrecadação<span class="tag-ex" id="tagEx" hidden>exemplo</span></div>
-    <div class="pct">Estamos a <em id="pct">0%</em><br>da meta</div>
-    <div class="barra" role="progressbar" aria-labelledby="t-meta" aria-valuemin="0" aria-valuemax="100" id="barraWrap"><i id="barra"></i></div>
-    <div class="numeros">
-      <div><b id="arrec">R$ 0</b><span>arrecadado</span></div>
-      <div><b id="alvo">R$ 0</b><span>meta</span></div>
-      <div><b id="fams">0</b><span id="famsTxt">famílias garantidas</span></div>
+  <!-- 1. entrada -->
+  <section class="tela" id="inicio" aria-labelledby="t-inicio">
+    <div class="hero">
+      <svg class="arte" data-casas aria-hidden="true"></svg>
+      <div>
+        <h1 id="t-inicio">Natal<br>Social <em>2026</em></h1>
+        <p class="lead">Ajude a fazer o Natal de <b class="nfam">20 famílias</b> mais feliz. Entrega no sábado, <b>12/12</b>.</p>
+      </div>
+    </div>
+    <div class="duas">
+      <div>
+        <div class="rot">O que é</div>
+        <h2>Um Natal de verdade para quem <em>mais precisa</em></h2>
+        <p>O Natal Social é uma ação social e voluntária realizada pelo Centro de Atividades Culturais (CEAC), que visa levar brinquedos e cestas básicas a famílias da Cidade Estrutural, em Brasília, DF.</p>
+      </div>
+      <div>
+        <ol class="passos">
+          <li><span class="n">1</span><span><b>Visitas.</b> Nos sábados antes do Natal, voluntários visitam cada família em casa para conhecer quem mora ali e do que precisa.</span></li>
+          <li><span class="n">2</span><span><b>Arrecadação.</b> Com as doações, compramos as cestas básicas e os presentes de cada criança.</span></li>
+          <li><span class="n">3</span><span><b>Entrega, 12/12.</b> No sábado, 12 de dezembro, cada família recebe a cesta e os presentes.</span></li>
+        </ol>
+        <p>Este ano, a meta é chegar a <b class="nfam">20 famílias</b>.</p>
+        <a class="btn" href="#ajudar" style="margin-top:20px">Quero ajudar</a>
+      </div>
     </div>
   </section>
 
-  <section id="doar" aria-labelledby="t-doar">
-    <div class="rot">Doações</div>
-    <h2 id="t-doar">Doe pelo <em>PIX</em></h2>
-    <p class="suave">Qualquer valor ajuda. Copie a chave e cole no app do seu banco.</p>
-    <div class="chave"><div><small>Chave PIX · Rodrigo Lôbo, tesoureiro</small><b id="chave"></b></div><button class="b-sec" id="copiarChave" type="button">Copiar</button></div>
-    <p class="suave" style="margin-top:22px">Ou escolha um valor e gere o PIX pronto:</p>
-    <div class="valores" id="valores"></div>
-    <label class="outro" for="valor"><span>R$</span><input id="valor" inputmode="decimal" placeholder="outro valor" autocomplete="off"></label>
-    <button class="b-pri" id="gerar" type="button" disabled>Gerar PIX</button>
-    <div id="pix" hidden>
-      <div id="qr"></div>
-      <div class="vpix" id="valorPix"></div>
-      <button class="b-pri" id="copiar" type="button" style="background:var(--tinta);color:var(--papel)">Copiar código PIX copia e cola</button>
-      <div class="codigo" id="codigo"></div>
+  <!-- 2. como ajudar -->
+  <section class="tela" id="ajudar" aria-labelledby="t-ajudar">
+    <a class="voltar" href="#inicio">← Voltar</a>
+    <div class="duas" style="margin-top:12px">
+      <div>
+        <div class="rot">Como ajudar</div>
+        <h2 id="t-ajudar">Obrigado por querer <em>fazer parte</em></h2>
+        <p class="suave">Tem dois jeitos de ajudar, e dá para fazer os dois.</p>
+        <div class="cartao" id="meta" style="margin-top:20px">
+          <div class="rot">Meta de arrecadação</div>
+          <div class="pct">Estamos a <em id="pct">0%</em> da meta</div>
+          <div class="barra" role="progressbar" aria-label="Meta de arrecadação" aria-valuemin="0" aria-valuemax="100" id="barraWrap"><i id="barra"></i></div>
+          <div class="numeros">
+            <div><b id="arrec">R$ 0</b><span>arrecadado</span></div>
+            <div><b id="alvo">R$ 0</b><span>meta</span></div>
+            <div><b id="fams">0</b><span>famílias garantidas</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="escolhas" style="margin-top:0">
+        <a class="escolha" href="#doar">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 21V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></span>
+          <b>Quero doar</b><span>Pelo PIX, qualquer valor. R$ 1.000 garantem o Natal de uma família.</span><span class="ir">Doar agora →</span>
+        </a>
+        <a class="escolha" href="#visitas">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg></span>
+          <b>Quero ir nas visitas</b><span>Vá com a gente num sábado conhecer as famílias da Estrutural.</span><span class="ir">Me cadastrar →</span>
+        </a>
+      </div>
     </div>
   </section>
 
-  <section id="visitas" aria-labelledby="t-vis">
-    <div class="rot">Visitas às famílias</div>
-    <h2 id="t-vis">Vá com a gente <em>à Estrutural</em></h2>
-    <p>Antes do Natal, a gente visita cada família em casa. É nessa conversa que conhecemos quem mora ali, quantas pessoas são e do que precisam, para que no dia 12/12 cada cesta e cada presente cheguem certinhos.</p>
-    <div class="rot" style="margin-top:20px">Sábados de visita</div>
-    <ul class="datas" id="datas"></ul>
-    <ol class="passos">
-      <li><span class="n">1</span><span><b>Encontro e saída em grupo.</b> Horário e ponto de encontro são combinados no WhatsApp antes de cada sábado. Quem tem carro leva quem precisa de carona, e o combustível é dividido.</span></li>
-      <li><span class="n">2</span><span><b>Conversa com a família.</b> Em duplas ou trios, com um coordenador junto: quem é o responsável, quantas pessoas moram na casa, idade das crianças e os pedidos.</span></li>
-      <li><span class="n">3</span><span><b>Registro.</b> Anotamos o contato e a localização da casa para não ter erro no dia da entrega.</span></li>
-      <li><span class="n">4</span><span><b>Volta.</b> A visita leva a manhã ou a tarde. Você recebe por mensagem a confirmação do seu sábado.</span></li>
-    </ol>
-
-    <h2 style="font-size:32px;margin-top:30px">Quero ajudar nas visitas</h2>
-    <form id="form" novalidate>
-      <div class="campo"><label for="f-nome">Nome</label><input id="f-nome" name="nome" autocomplete="name" required></div>
-      <div class="campo"><label for="f-zap">WhatsApp</label><input id="f-zap" name="whatsapp" inputmode="tel" autocomplete="tel" placeholder="(61) 9 0000-0000" required></div>
-      <div class="campo"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" placeholder="para receber a confirmação"></div>
-      <fieldset class="grupo"><legend>Quais sábados você pode?</legend><div class="opcoes" id="f-sabados"></div></fieldset>
-      <fieldset class="grupo"><legend>Como você vai?</legend><div class="opcoes">
-        <label><input type="radio" name="transporte" value="carro" id="f-t1"> Tenho carro e dou carona</label>
-        <label><input type="radio" name="transporte" value="carona" id="f-t2"> Preciso de carona</label>
-        <label><input type="radio" name="transporte" value="proprio" id="f-t3"> Vou por conta</label>
-      </div></fieldset>
-      <button class="b-pri" type="submit" id="enviar">Quero ajudar</button>
-      <p class="suave" id="formMsg" role="status" style="font-size:14px"></p>
-    </form>
-    <div class="ok" id="ok" role="status"><b>Cadastro enviado.</b> A coordenação vai te chamar no WhatsApp para confirmar o sábado, o horário e o ponto de encontro.</div>
+  <!-- 3a. doar -->
+  <section class="tela" id="doar" aria-labelledby="t-doar">
+    <a class="voltar" href="#ajudar">← Voltar</a>
+    <div class="duas" style="margin-top:12px">
+      <div>
+        <div class="rot">Doação</div>
+        <h2 id="t-doar">Doe pelo <em>PIX</em></h2>
+        <p class="suave">Copie a chave e cole no app do seu banco, na opção PIX. Qualquer valor ajuda.</p>
+        <div class="chave"><div><small>Chave PIX · Rodrigo Lôbo, tesoureiro</small><b id="chave"></b></div><button id="copiarChave" type="button">Copiar</button></div>
+      </div>
+      <div class="cartao">
+        <div class="rot">Ou gere um PIX com valor</div>
+        <div class="valores" id="valores"></div>
+        <label class="outro" for="valor"><span>R$</span><input id="valor" inputmode="decimal" placeholder="outro valor" autocomplete="off"></label>
+        <button class="btn" id="gerar" type="button" disabled>Gerar PIX</button>
+        <div id="pix" hidden>
+          <div id="qr"></div>
+          <div class="vpix" id="valorPix"></div>
+          <button class="btn sec" id="copiar" type="button">Copiar código PIX copia e cola</button>
+          <div class="codigo" id="codigo"></div>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <section aria-labelledby="t-cont">
-    <div class="rot" id="t-cont">Informações e doações</div>
-    <div class="contatos" id="contatos"></div>
+  <!-- 3b. visitas -->
+  <section class="tela" id="visitas" aria-labelledby="t-vis">
+    <a class="voltar" href="#ajudar">← Voltar</a>
+    <div class="duas" style="margin-top:12px">
+      <div>
+        <div class="rot">Visitas às famílias</div>
+        <h2 id="t-vis">Vá com a gente <em>à Estrutural</em></h2>
+        <p>Antes do Natal, visitamos cada família em casa para conhecer quem mora ali e do que precisa. Assim, no dia 12/12, cada cesta e cada presente chegam certinhos.</p>
+        <div class="rot" style="margin-top:18px">Sábados de visita</div>
+        <ul class="datas" id="datas"></ul>
+        <ol class="passos">
+          <li><span class="n">1</span><span><b>Saída em grupo.</b> Horário e ponto de encontro chegam no seu WhatsApp. Quem tem carro leva quem precisa de carona.</span></li>
+          <li><span class="n">2</span><span><b>Conversa.</b> Em duplas ou trios, com um coordenador junto.</span></li>
+          <li><span class="n">3</span><span><b>Volta.</b> A visita leva a manhã ou a tarde.</span></li>
+        </ol>
+      </div>
+      <div class="cartao">
+        <div class="rot">Cadastro</div>
+        <h2 style="font-size:26px">Quero ir nas visitas</h2>
+        <form id="form" novalidate>
+          <div class="campo"><label for="f-nome">Nome</label><input id="f-nome" name="nome" autocomplete="name" required></div>
+          <div class="campo"><label for="f-zap">WhatsApp</label><input id="f-zap" name="whatsapp" inputmode="tel" autocomplete="tel" placeholder="(61) 9 0000-0000" required></div>
+          <div class="campo"><label for="f-email">Email (opcional)</label><input id="f-email" name="email" type="email" autocomplete="email"></div>
+          <fieldset class="grupo"><legend>Quais sábados você pode?</legend><div class="opcoes" id="f-sabados"></div></fieldset>
+          <fieldset class="grupo"><legend>Como você vai?</legend><div class="opcoes">
+            <label><input type="radio" name="transporte" value="carro" id="f-t1"> Tenho carro e dou carona</label>
+            <label><input type="radio" name="transporte" value="carona" id="f-t2"> Preciso de carona</label>
+            <label><input type="radio" name="transporte" value="proprio" id="f-t3"> Vou por conta</label>
+          </div></fieldset>
+          <button class="btn" type="submit" id="enviar">Enviar cadastro</button>
+          <p class="suave" id="formMsg" role="status" style="font-size:14px;margin:0"></p>
+        </form>
+        <div class="ok" id="ok" role="status" hidden><b>Cadastro enviado.</b> A coordenação vai te chamar no WhatsApp para confirmar o sábado, o horário e o ponto de encontro.</div>
+      </div>
+    </div>
   </section>
 
-  </div>
-
-  <footer>Natal Social 2026 · Centro de Atividades Culturais - CEAC · Estrutural, DF</footer>
+  <footer>
+    <div><div class="rot">Informações e doações</div><div class="contatos" id="contatos" style="margin-top:8px"></div></div>
+    <div class="suave" style="font-size:13px">Natal Social 2026 · CEAC · Cidade Estrutural, DF</div>
+  </footer>
 </main>
 <div class="toast" id="toast" role="status"></div>
 
@@ -197,7 +270,7 @@ const CONTATOS=[['Rodrigo Lôbo','(61) 99825-3570','5561998253570'],['Anderson M
 const SABADOS=['2026-10-31','2026-11-07','2026-11-14','2026-11-21','2026-11-28','2026-12-05'];
 const ENTREGA='2026-12-12';
 // meta: vem do Firebase (publico/campanha) quando ele estiver ligado; até lá, estes valores
-const CAMPANHA={familias:20,meta:20000,arrecadado:0,valorFamilia:1000,exemplo:false};
+const CAMPANHA={familias:20,meta:20000,arrecadado:0,valorFamilia:1000};
 const FIREBASE=null; // {apiKey, authDomain, projectId, appId}
 // sem Firebase, o cadastro vira uma mensagem de WhatsApp pronta para a coordenação
 const ZAP_CADASTRO='5561999239137';
@@ -207,6 +280,24 @@ const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFr
 const dia=s=>s.slice(8,10)+'/'+s.slice(5,7);
 const toast=t=>{$('toast').textContent=t;$('toast').classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('on'),2400)};
 async function copiar(t,msg){try{await navigator.clipboard.writeText(t);toast(msg)}catch{toast('Não deu para copiar. Segure o texto para copiar.')}}
+
+// ---------- desenho das casas ----------
+document.querySelectorAll('[data-casas]').forEach(svg=>{
+  svg.setAttribute('viewBox','0 0 200 82');svg.setAttribute('fill','none');
+  const jan=[[22,54],[55,47],[63,47],[55,57],[93,56],[143,44,4],[166,56],[178,56]].map(([x,y,w=6],i)=>`<rect x="${x}" y="${y}" width="${w}" height="6" fill="${i%3===1?'none':'var(--janela)'}" stroke="var(--verde)" stroke-width=".9"/>`).join('');
+  svg.innerHTML=jan+`<path d="M-2 72 H12 V50 L27 38 L42 50 V72 H49 V41 H74 V72 H80 V53 L96 39 L112 53 V72 H119 V47 H138 V36 H150 V72 H157 V51 L172 41 L187 51 V72 H202" stroke="var(--verde)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M93 72 V63 H99 V72" stroke="var(--verde)" stroke-width="1.1"/>`;
+});
+
+// ---------- telas ----------
+const TELAS=['inicio','ajudar','doar','visitas'];
+function rota(){
+  const h=location.hash.slice(1),t=TELAS.includes(h)?h:'inicio';
+  TELAS.forEach(x=>$(x).classList.toggle('on',x===t));
+  if(t==='ajudar')mostrarMeta(CAMPANHA);
+  window.scrollTo({top:0});
+  document.title=({inicio:'Natal Social 2026 · CEAC',ajudar:'Como ajudar · Natal Social 2026',doar:'Doar · Natal Social 2026',visitas:'Visitas · Natal Social 2026'})[t];
+}
+addEventListener('hashchange',rota);
 
 // ---------- PIX (BR Code do Banco Central) ----------
 const f=(id,v)=>id+String(v.length).padStart(2,'0')+v;
@@ -222,7 +313,7 @@ $('chave').textContent=PIX.chave;
 $('copiarChave').onclick=()=>copiar(PIX.chave,'Chave PIX copiada. Agora é só colar no banco.');
 let valor=0;
 function opcoes(){
-  const vs=[20,50,100];vs.push(CAMPANHA.valorFamilia||200);
+  const vs=[50,100,200,CAMPANHA.valorFamilia||500];
   $('valores').innerHTML=vs.map(v=>`<button type="button" data-v="${v}">${brl(v)}</button>`).join('');
   $('valores').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('valor').value='';escolher(+b.dataset.v)});
 }
@@ -235,33 +326,22 @@ $('gerar').onclick=()=>{
   $('pix').scrollIntoView({behavior:'smooth',block:'center'});
 };
 $('copiar').onclick=()=>copiar($('codigo').textContent,'Código copiado. Cole em PIX copia e cola no seu banco.');
-opcoes();
 
 // ---------- meta ----------
 function mostrarMeta(c){
-  $('leadFam').textContent=`${c.familias} famílias`;$('introFam').textContent=`${c.familias} famílias`;
-  if(!c.meta){$('meta').hidden=true;return}
-  $('meta').hidden=false;$('tagEx').hidden=!c.exemplo;
-  const arr=c.arrecadado||0,pct=Math.min(100,Math.round(arr/c.meta*100));
+  document.querySelectorAll('.nfam').forEach(n=>n.textContent=`${c.familias} famílias`);
+  const arr=c.arrecadado||0,pct=c.meta?Math.min(100,Math.round(arr/c.meta*100)):0;
   $('pct').textContent=pct+'%';$('barraWrap').setAttribute('aria-valuenow',pct);
-  requestAnimationFrame(()=>$('barra').style.width=pct+'%');
+  $('barra').style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>$('barra').style.width=pct+'%'));
   $('arrec').textContent=brl(arr);$('alvo').textContent=brl(c.meta);
   const fam=c.valorFamilia?Math.min(c.familias,Math.floor(arr/c.valorFamilia)):Math.round(c.familias*pct/100);
   $('fams').textContent=`${fam} de ${c.familias}`;
 }
-mostrarMeta(CAMPANHA);
 
 // ---------- visitas ----------
 const hoje=new Date().toISOString().slice(0,10);
 $('datas').innerHTML=SABADOS.map(s=>`<li class="${s<hoje?'foi':''}">${dia(s)}</li>`).join('')+`<li class="final">${dia(ENTREGA)} entrega</li>`;
 $('f-sabados').innerHTML=SABADOS.filter(s=>s>=hoje).map((s,i)=>`<label><input type="checkbox" name="sabados" value="${s}" id="f-s${i}"> ${dia(s)}</label>`).join('')||'<span class="suave">Os sábados de visita já passaram. Fale com a coordenação.</span>';
-
-// ---------- entrada: explicação primeiro, painel depois do "Quero ajudar" ----------
-const PAINEL=['ajudar','doar','visitas','meta'];
-function abrirPainel(rolar){$('intro').hidden=true;$('painel').hidden=false;mostrarMeta(CAMPANHA);if(rolar)$('painel').scrollIntoView({behavior:'smooth'})}
-$('quero').onclick=()=>{history.pushState(null,'','#ajudar');abrirPainel(true)};
-function rota(){const h=location.hash.slice(1);if(PAINEL.includes(h)){abrirPainel(false);if(h!=='ajudar')$(h)?.scrollIntoView()}else{$('intro').hidden=false;$('painel').hidden=true}}
-addEventListener('popstate',rota);addEventListener('hashchange',rota);rota();
 
 let db=null,fs=null;
 $('form').onsubmit=async e=>{
@@ -272,7 +352,7 @@ $('form').onsubmit=async e=>{
   $('formMsg').textContent='';
   if(db){
     $('enviar').disabled=true;
-    try{await fs.addDoc(fs.collection(db,'voluntarios'),{...d,criadoEm:fs.serverTimestamp(),aprovado:false});e.target.hidden=true;$('ok').classList.add('on')}
+    try{await fs.addDoc(fs.collection(db,'voluntarios'),{...d,criadoEm:fs.serverTimestamp(),aprovado:false});e.target.hidden=true;$('ok').hidden=false}
     catch{$('formMsg').textContent='Não deu para enviar agora. Confira a internet e tente de novo.';$('enviar').disabled=false}
     return;
   }
@@ -281,13 +361,14 @@ $('form').onsubmit=async e=>{
   location.href=`https://wa.me/${ZAP_CADASTRO}?text=${encodeURIComponent(msg)}`;
 };
 
-$('contatos').innerHTML=CONTATOS.map(([n,t,z])=>`<a href="https://wa.me/${z}?text=${encodeURIComponent('Oi! Vim pela página do Natal Social 2026.')}" target="_blank" rel="noopener"><span>${n}</span><span>${t}</span></a>`).join('');
+$('contatos').innerHTML=CONTATOS.map(([n,t,z])=>`<a href="https://wa.me/${z}?text=${encodeURIComponent('Oi! Vim pela página do Natal Social 2026.')}" target="_blank" rel="noopener">${n} <span>${t}</span></a>`).join('');
 
+opcoes();mostrarMeta(CAMPANHA);rota();
 if(FIREBASE){
   const {initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
   fs=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
   db=fs.getFirestore(initializeApp(FIREBASE));
-  fs.onSnapshot(fs.doc(db,'publico','campanha'),s=>{if(s.exists()){Object.assign(CAMPANHA,s.data(),{exemplo:false});opcoes();mostrarMeta(CAMPANHA)}});
+  fs.onSnapshot(fs.doc(db,'publico','campanha'),s=>{if(s.exists()){Object.assign(CAMPANHA,s.data());opcoes();mostrarMeta(CAMPANHA)}});
 }
 </script>
 </body></html>
