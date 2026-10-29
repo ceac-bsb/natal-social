@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,100;1,9..144,300..700,100&family=Outfit:wght@300;400;500;600&display=block');
+
+:root{
+  --salvia:#C9D1B8;
+  --pinheiro:#1E4A2C;
+  --folha:#3D5C42;
+  --laco:#C2412D;
+  --kraft:#C99A63;
+  --creme:#F5F1E4;
+  --display:'Fraunces',Georgia,serif;
+  --corpo:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--salvia)}
+body{font-family:var(--corpo);color:var(--pinheiro);-webkit-font-smoothing:antialiased}
+.peca{position:relative;overflow:hidden;background:var(--salvia)}
+.display{font-family:var(--display);font-variation-settings:'SOFT' 100;font-weight:600;letter-spacing:-.02em;line-height:.86}
+.rotulo{font-weight:600;text-transform:uppercase;letter-spacing:.14em}
+.mancha{position:absolute;fill:var(--folha)}
+.qr-card{background:var(--creme);border-radius:18px;display:flex;flex-direction:column;align-items:center}
+.qr-card img{display:block}
