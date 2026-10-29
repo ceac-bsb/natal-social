@@ -106,6 +106,20 @@ footer{margin-top:36px;font-size:13px;color:var(--suave)}
   <h1>Natal<br>Social <em>2026</em></h1>
   <p class="lead">Ajude a fazer o Natal de <b id="leadFam">20 famílias</b> da Estrutural mais feliz. Entrega no sábado, <b>12/12</b>.</p>
 
+  <section id="intro" aria-labelledby="t-intro">
+    <div class="rot">O que é</div>
+    <h2 id="t-intro">Um Natal de verdade para quem <em>mais precisa</em></h2>
+    <p>O Natal Social é uma ação social e voluntária realizada pelo Centro de Atividades Culturais (CEAC), que visa levar brinquedos e cestas básicas a famílias da Cidade Estrutural, em Brasília, DF.</p>
+    <ol class="passos">
+      <li><span class="n">1</span><span><b>Visitas.</b> Nos sábados antes do Natal, voluntários visitam cada família em casa para conhecer quem mora ali e do que precisa.</span></li>
+      <li><span class="n">2</span><span><b>Arrecadação.</b> Com as doações, compramos as cestas básicas e os presentes de cada criança.</span></li>
+      <li><span class="n">3</span><span><b>Entrega, 12/12.</b> No sábado, 12 de dezembro, cada família recebe a cesta e os presentes.</span></li>
+    </ol>
+    <p>Este ano, a meta é chegar a <b id="introFam">20 famílias</b>. Você pode ajudar doando ou indo com a gente nas visitas.</p>
+    <button class="b-pri" id="quero" type="button">Quero ajudar</button>
+  </section>
+
+  <div id="painel" hidden>
   <section id="meta" aria-labelledby="t-meta" hidden>
     <div class="rot" id="t-meta">Meta de arrecadação<span class="tag-ex" id="tagEx" hidden>exemplo</span></div>
     <div class="pct">Estamos a <em id="pct">0%</em><br>da meta</div>
@@ -169,6 +183,8 @@ footer{margin-top:36px;font-size:13px;color:var(--suave)}
     <div class="contatos" id="contatos"></div>
   </section>
 
+  </div>
+
   <footer>Natal Social 2026 · Centro de Atividades Culturais - CEAC · Estrutural, DF</footer>
 </main>
 <div class="toast" id="toast" role="status"></div>
@@ -223,7 +239,7 @@ opcoes();
 
 // ---------- meta ----------
 function mostrarMeta(c){
-  $('leadFam').textContent=`${c.familias} famílias`;
+  $('leadFam').textContent=`${c.familias} famílias`;$('introFam').textContent=`${c.familias} famílias`;
   if(!c.meta){$('meta').hidden=true;return}
   $('meta').hidden=false;$('tagEx').hidden=!c.exemplo;
   const arr=c.arrecadado||0,pct=Math.min(100,Math.round(arr/c.meta*100));
@@ -239,6 +255,13 @@ mostrarMeta(CAMPANHA);
 const hoje=new Date().toISOString().slice(0,10);
 $('datas').innerHTML=SABADOS.map(s=>`<li class="${s<hoje?'foi':''}">${dia(s)}</li>`).join('')+`<li class="final">${dia(ENTREGA)} entrega</li>`;
 $('f-sabados').innerHTML=SABADOS.filter(s=>s>=hoje).map((s,i)=>`<label><input type="checkbox" name="sabados" value="${s}" id="f-s${i}"> ${dia(s)}</label>`).join('')||'<span class="suave">Os sábados de visita já passaram. Fale com a coordenação.</span>';
+
+// ---------- entrada: explicação primeiro, painel depois do "Quero ajudar" ----------
+const PAINEL=['ajudar','doar','visitas','meta'];
+function abrirPainel(rolar){$('intro').hidden=true;$('painel').hidden=false;mostrarMeta(CAMPANHA);if(rolar)$('painel').scrollIntoView({behavior:'smooth'})}
+$('quero').onclick=()=>{history.pushState(null,'','#ajudar');abrirPainel(true)};
+function rota(){const h=location.hash.slice(1);if(PAINEL.includes(h)){abrirPainel(false);if(h!=='ajudar')$(h)?.scrollIntoView()}else{$('intro').hidden=false;$('painel').hidden=true}}
+addEventListener('popstate',rota);addEventListener('hashchange',rota);rota();
 
 let db=null,fs=null;
 $('form').onsubmit=async e=>{
