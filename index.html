@@ -1,1 +1,270 @@
-<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=doar/"><title>Natal Social 2026</title><a href="doar/">Natal Social 2026</a>
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Natal Social 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Natal Social 2026 do CEAC: ajude a fazer o Natal de 20 famílias da Estrutural mais feliz. Doe pelo PIX ou ajude nas visitas.">
+<meta name="theme-color" content="#F4F4EF">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<style>
+/* Layout: coluna única de leitura no celular; seções separadas por fio, sem cards em tudo */
+:root{
+  --papel:#F4F4EF; --tinta:#1A1F1B; --suave:#5E655F; --fio:#1A1F1B26;
+  --laco:#1D6B3A; --janela:#F2B33D; --campo:#FFFFFF;
+  --disp:'Nunito',system-ui,sans-serif; --corpo:'Nunito',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--papel:#151815;--tinta:#ECEDE6;--suave:#A6ACA5;--fio:#ECEDE626;--laco:#5BB57A;--campo:#1F231F;color-scheme:dark}}
+:root[data-theme="dark"]{--papel:#151815;--tinta:#ECEDE6;--suave:#A6ACA5;--fio:#ECEDE626;--laco:#5BB57A;--campo:#1F231F;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--corpo);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto;padding-block:28px 56px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.org{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.arte{display:block;width:calc(100% + 36px);margin:18px -18px 0;max-width:none}
+h1{font-family:var(--disp);font-weight:900;font-size:clamp(54px,16vw,84px);line-height:.92;letter-spacing:-.02em;margin:14px 0 0}
+h1 em{color:var(--laco);font-style:normal}
+.lead{font-size:19px;margin:16px 0 0;text-wrap:balance}
+.lead b{font-weight:600}
+section{border-top:1.5px solid var(--tinta);margin-top:40px;padding-top:18px}
+.rot{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+h2{font-family:var(--disp);font-weight:900;font-size:34px;line-height:1;letter-spacing:-.01em;margin:8px 0 0;text-wrap:balance}
+h2 em{color:var(--laco);font-style:normal}
+p{margin:12px 0 0}
+.suave{color:var(--suave)}
+.tag-ex{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--laco);border:1px solid var(--laco);border-radius:99px;padding:2px 8px;margin-left:8px;vertical-align:3px}
+
+/* meta */
+.pct{font-family:var(--disp);font-weight:900;font-size:clamp(56px,17vw,84px);line-height:.95;margin-top:6px}
+.pct em{color:var(--laco);font-style:normal}
+.barra{position:relative;height:12px;background:var(--fio);border-radius:99px;margin-top:14px;overflow:hidden}
+.barra i{position:absolute;inset:0 auto 0 0;width:0;background:var(--laco);border-radius:99px;transition:width 1.2s ease}
+@media (prefers-reduced-motion:reduce){.barra i{transition:none}}
+.numeros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.numeros div{border-left:1.5px solid var(--fio);padding-left:10px}
+.numeros b{display:block;font-family:var(--disp);font-weight:800;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.numeros span{font-size:13px;color:var(--suave)}
+
+/* doar */
+.chave{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--campo);border:1.5px solid var(--tinta);border-radius:14px;padding:14px 14px 14px 16px;margin-top:16px}
+.chave div{min-width:0}
+.chave small{display:block;font-size:12px;color:var(--suave)}
+.chave b{display:block;font-weight:600;font-size:17px;word-break:break-all}
+button,.btn{font:600 16px var(--corpo);border-radius:12px;cursor:pointer}
+.b-sec{flex:none;background:transparent;color:var(--tinta);border:1.5px solid var(--tinta);padding:10px 14px}
+.b-pri{display:block;width:100%;background:var(--laco);color:#fff;border:0;padding:15px;margin-top:12px}
+.b-pri:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,label:focus-within{outline:2.5px solid var(--janela);outline-offset:2px}
+.valores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:18px}
+.valores button{background:transparent;color:var(--tinta);border:1.5px solid var(--fio);padding:12px 0;font-variant-numeric:tabular-nums}
+.valores button.on{border-color:var(--tinta);background:var(--tinta);color:var(--papel)}
+.outro{display:flex;align-items:center;gap:8px;margin-top:8px;border:1.5px solid var(--fio);border-radius:12px;padding:0 14px;background:var(--campo)}
+.outro span{font-weight:600}
+.outro input{flex:1;min-width:0;border:0;background:transparent;font:500 17px var(--corpo);color:var(--tinta);padding:13px 0;outline:none}
+#pix{margin-top:18px;text-align:center}
+#qr{width:200px;height:200px;margin:0 auto;background:#fff;padding:10px;border-radius:12px}
+#qr svg{width:100%;height:100%;display:block}
+.vpix{font-family:var(--disp);font-weight:800;font-size:34px;margin-top:8px}
+.codigo{font-size:12px;word-break:break-all;color:var(--suave);background:var(--campo);border-radius:10px;padding:10px;margin-top:10px;text-align:left}
+
+/* visitas */
+.datas{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding:0;list-style:none}
+.datas li{border:1.5px solid var(--tinta);border-radius:99px;padding:6px 12px;font-weight:600;font-size:15px;font-variant-numeric:tabular-nums}
+.datas li.foi{border-color:var(--fio);color:var(--suave);text-decoration:line-through}
+.datas li.final{background:var(--laco);border-color:var(--laco);color:#fff}
+.passos{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:14px}
+.passos li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+.passos .n{font-family:var(--disp);font-weight:900;font-size:30px;line-height:1;color:var(--laco)}
+.passos b{font-weight:600}
+form{margin-top:22px;display:grid;gap:14px}
+.campo label,.grupo legend{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.campo input{width:100%;font:500 17px var(--corpo);color:var(--tinta);background:var(--campo);border:1.5px solid var(--fio);border-radius:12px;padding:12px 14px}
+.grupo{border:0;padding:0;margin:0}
+.opcoes{display:flex;flex-wrap:wrap;gap:8px}
+.opcoes label{display:flex;align-items:center;gap:8px;border:1.5px solid var(--fio);border-radius:12px;padding:10px 12px;font-size:15px;cursor:pointer;background:var(--campo)}
+.opcoes input{accent-color:var(--laco);width:18px;height:18px;margin:0}
+.opcoes label:has(input:checked){border-color:var(--tinta)}
+.ok{display:none;border:1.5px solid var(--tinta);border-radius:14px;padding:16px;margin-top:18px}
+.ok.on{display:block}
+
+/* contatos */
+.contatos{display:grid;gap:0;margin-top:10px}
+.contatos a{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--fio);color:var(--tinta);text-decoration:none}
+.contatos a span:last-child{color:var(--laco);font-weight:600;font-variant-numeric:tabular-nums}
+footer{margin-top:36px;font-size:13px;color:var(--suave)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,120px);background:var(--tinta);color:var(--papel);padding:12px 18px;border-radius:12px;font-size:15px;transition:transform .25s;z-index:5;max-width:calc(100% - 32px)}
+.toast.on{transform:translate(-50%,0)}
+</style></head>
+<body>
+<main class="wrap">
+  <div class="org">Centro de Atividades Culturais - CEAC</div>
+  <svg class="arte" viewBox="0 0 200 82" fill="none" aria-hidden="true">
+    <g stroke="var(--laco)" stroke-width=".9">
+      <rect x="22" y="54" width="6" height="6" fill="var(--janela)"/><rect x="55" y="47" width="6" height="6"/><rect x="63" y="47" width="6" height="6" fill="var(--janela)"/><rect x="55" y="57" width="6" height="6" fill="var(--janela)"/><rect x="93" y="56" width="6" height="6" fill="var(--janela)"/><rect x="143" y="44" width="4" height="6"/><rect x="166" y="56" width="6" height="6" fill="var(--janela)"/><rect x="178" y="56" width="6" height="6" fill="var(--janela)"/>
+    </g>
+    <path d="M-2 72 H12 V50 L27 38 L42 50 V72 H49 V41 H74 V72 H80 V53 L96 39 L112 53 V72 H119 V47 H138 V36 H150 V72 H157 V51 L172 41 L187 51 V72 H202" stroke="var(--laco)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M93 72 V63 H99 V72" stroke="var(--laco)" stroke-width="1.1"/>
+  </svg>
+  <h1>Natal<br>Social <em>2026</em></h1>
+  <p class="lead">Ajude a fazer o Natal de <b id="leadFam">20 famílias</b> da Estrutural mais feliz. Entrega no sábado, <b>12/12</b>.</p>
+
+  <section id="meta" aria-labelledby="t-meta" hidden>
+    <div class="rot" id="t-meta">Meta de arrecadação<span class="tag-ex" id="tagEx" hidden>exemplo</span></div>
+    <div class="pct">Estamos a <em id="pct">0%</em><br>da meta</div>
+    <div class="barra" role="progressbar" aria-labelledby="t-meta" aria-valuemin="0" aria-valuemax="100" id="barraWrap"><i id="barra"></i></div>
+    <div class="numeros">
+      <div><b id="arrec">R$ 0</b><span>arrecadado</span></div>
+      <div><b id="alvo">R$ 0</b><span>meta</span></div>
+      <div><b id="fams">0</b><span id="famsTxt">famílias garantidas</span></div>
+    </div>
+  </section>
+
+  <section id="doar" aria-labelledby="t-doar">
+    <div class="rot">Doações</div>
+    <h2 id="t-doar">Doe pelo <em>PIX</em></h2>
+    <p class="suave">Qualquer valor ajuda. Copie a chave e cole no app do seu banco.</p>
+    <div class="chave"><div><small>Chave PIX · Rodrigo Lôbo, tesoureiro</small><b id="chave"></b></div><button class="b-sec" id="copiarChave" type="button">Copiar</button></div>
+    <p class="suave" style="margin-top:22px">Ou escolha um valor e gere o PIX pronto:</p>
+    <div class="valores" id="valores"></div>
+    <label class="outro" for="valor"><span>R$</span><input id="valor" inputmode="decimal" placeholder="outro valor" autocomplete="off"></label>
+    <button class="b-pri" id="gerar" type="button" disabled>Gerar PIX</button>
+    <div id="pix" hidden>
+      <div id="qr"></div>
+      <div class="vpix" id="valorPix"></div>
+      <button class="b-pri" id="copiar" type="button" style="background:var(--tinta);color:var(--papel)">Copiar código PIX copia e cola</button>
+      <div class="codigo" id="codigo"></div>
+    </div>
+  </section>
+
+  <section id="visitas" aria-labelledby="t-vis">
+    <div class="rot">Visitas às famílias</div>
+    <h2 id="t-vis">Vá com a gente <em>à Estrutural</em></h2>
+    <p>Antes do Natal, a gente visita cada família em casa. É nessa conversa que conhecemos quem mora ali, quantas pessoas são e do que precisam, para que no dia 12/12 cada cesta e cada presente cheguem certinhos.</p>
+    <div class="rot" style="margin-top:20px">Sábados de visita</div>
+    <ul class="datas" id="datas"></ul>
+    <ol class="passos">
+      <li><span class="n">1</span><span><b>Encontro e saída em grupo.</b> Horário e ponto de encontro são combinados no WhatsApp antes de cada sábado. Quem tem carro leva quem precisa de carona, e o combustível é dividido.</span></li>
+      <li><span class="n">2</span><span><b>Conversa com a família.</b> Em duplas ou trios, com um coordenador junto: quem é o responsável, quantas pessoas moram na casa, idade das crianças e os pedidos.</span></li>
+      <li><span class="n">3</span><span><b>Registro.</b> Anotamos o contato e a localização da casa para não ter erro no dia da entrega.</span></li>
+      <li><span class="n">4</span><span><b>Volta.</b> A visita leva a manhã ou a tarde. Você recebe por mensagem a confirmação do seu sábado.</span></li>
+    </ol>
+
+    <h2 style="font-size:32px;margin-top:30px">Quero ajudar nas visitas</h2>
+    <form id="form" novalidate>
+      <div class="campo"><label for="f-nome">Nome</label><input id="f-nome" name="nome" autocomplete="name" required></div>
+      <div class="campo"><label for="f-zap">WhatsApp</label><input id="f-zap" name="whatsapp" inputmode="tel" autocomplete="tel" placeholder="(61) 9 0000-0000" required></div>
+      <div class="campo"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" placeholder="para receber a confirmação"></div>
+      <fieldset class="grupo"><legend>Quais sábados você pode?</legend><div class="opcoes" id="f-sabados"></div></fieldset>
+      <fieldset class="grupo"><legend>Como você vai?</legend><div class="opcoes">
+        <label><input type="radio" name="transporte" value="carro" id="f-t1"> Tenho carro e dou carona</label>
+        <label><input type="radio" name="transporte" value="carona" id="f-t2"> Preciso de carona</label>
+        <label><input type="radio" name="transporte" value="proprio" id="f-t3"> Vou por conta</label>
+      </div></fieldset>
+      <button class="b-pri" type="submit" id="enviar">Quero ajudar</button>
+      <p class="suave" id="formMsg" role="status" style="font-size:14px"></p>
+    </form>
+    <div class="ok" id="ok" role="status"><b>Cadastro enviado.</b> A coordenação vai te chamar no WhatsApp para confirmar o sábado, o horário e o ponto de encontro.</div>
+  </section>
+
+  <section aria-labelledby="t-cont">
+    <div class="rot" id="t-cont">Informações e doações</div>
+    <div class="contatos" id="contatos"></div>
+  </section>
+
+  <footer>Natal Social 2026 · Centro de Atividades Culturais - CEAC · Estrutural, DF</footer>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script type="module">
+// ---------- configuração ----------
+const PIX={chave:'rod.lobo.mariano@gmail.com',nome:'Rodrigo Lobo Mariano',cidade:'SAO PAULO',cep:'05409000',descricao:'Natal Social 2026'};
+const CONTATOS=[['Rodrigo Lôbo','(61) 99825-3570','5561998253570'],['Anderson Maciel','(61) 99923-9137','5561999239137']];
+const SABADOS=['2026-10-31','2026-11-07','2026-11-14','2026-11-21','2026-11-28','2026-12-05'];
+const ENTREGA='2026-12-12';
+// meta: vem do Firebase (publico/campanha) quando ele estiver ligado; até lá, estes valores
+const CAMPANHA={familias:20,meta:0,arrecadado:0,valorFamilia:0,exemplo:false};
+const FIREBASE=null; // {apiKey, authDomain, projectId, appId}
+// sem Firebase, o cadastro vira uma mensagem de WhatsApp pronta para a coordenação
+const ZAP_CADASTRO='5561999239137';
+
+const $=id=>document.getElementById(id);
+const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:v%1?2:0});
+const dia=s=>s.slice(8,10)+'/'+s.slice(5,7);
+const toast=t=>{$('toast').textContent=t;$('toast').classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('on'),2400)};
+async function copiar(t,msg){try{await navigator.clipboard.writeText(t);toast(msg)}catch{toast('Não deu para copiar. Segure o texto para copiar.')}}
+
+// ---------- PIX (BR Code do Banco Central) ----------
+const f=(id,v)=>id+String(v.length).padStart(2,'0')+v;
+function crc16(s){let c=0xFFFF;for(const b of new TextEncoder().encode(s)){c^=b<<8;for(let i=0;i<8;i++)c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return c.toString(16).toUpperCase().padStart(4,'0')}
+function brcode(valor){
+  const sem=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+  let p=f('00','01')+f('26',f('00','BR.GOV.BCB.PIX')+f('01',PIX.chave)+f('02',sem(PIX.descricao)))+f('52','0000')+f('53','986');
+  if(valor)p+=f('54',valor.toFixed(2));
+  p+=f('58','BR')+f('59',sem(PIX.nome).slice(0,25))+f('60',sem(PIX.cidade).slice(0,15))+f('61',PIX.cep)+f('62',f('05','***'))+'6304';
+  return p+crc16(p);
+}
+$('chave').textContent=PIX.chave;
+$('copiarChave').onclick=()=>copiar(PIX.chave,'Chave PIX copiada. Agora é só colar no banco.');
+let valor=0;
+function opcoes(){
+  const vs=[20,50,100];vs.push(CAMPANHA.valorFamilia||200);
+  $('valores').innerHTML=vs.map(v=>`<button type="button" data-v="${v}">${brl(v)}</button>`).join('');
+  $('valores').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('valor').value='';escolher(+b.dataset.v)});
+}
+function escolher(v){valor=v>0?Math.round(v*100)/100:0;$('valores').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.v===valor));$('gerar').disabled=!valor;$('pix').hidden=true}
+$('valor').oninput=e=>escolher(parseFloat(e.target.value.replace(/\./g,'').replace(',','.'))||0);
+$('gerar').onclick=()=>{
+  const code=brcode(valor);const q=qrcode(0,'M');q.addData(code);q.make();
+  $('qr').innerHTML=q.createSvgTag({margin:0,scalable:true});
+  $('valorPix').textContent=brl(valor);$('codigo').textContent=code;$('pix').hidden=false;
+  $('pix').scrollIntoView({behavior:'smooth',block:'center'});
+};
+$('copiar').onclick=()=>copiar($('codigo').textContent,'Código copiado. Cole em PIX copia e cola no seu banco.');
+opcoes();
+
+// ---------- meta ----------
+function mostrarMeta(c){
+  $('leadFam').textContent=`${c.familias} famílias`;
+  if(!c.meta){$('meta').hidden=true;return}
+  $('meta').hidden=false;$('tagEx').hidden=!c.exemplo;
+  const arr=c.arrecadado||0,pct=Math.min(100,Math.round(arr/c.meta*100));
+  $('pct').textContent=pct+'%';$('barraWrap').setAttribute('aria-valuenow',pct);
+  requestAnimationFrame(()=>$('barra').style.width=pct+'%');
+  $('arrec').textContent=brl(arr);$('alvo').textContent=brl(c.meta);
+  const fam=c.valorFamilia?Math.min(c.familias,Math.floor(arr/c.valorFamilia)):Math.round(c.familias*pct/100);
+  $('fams').textContent=`${fam} de ${c.familias}`;
+}
+mostrarMeta(CAMPANHA);
+
+// ---------- visitas ----------
+const hoje=new Date().toISOString().slice(0,10);
+$('datas').innerHTML=SABADOS.map(s=>`<li class="${s<hoje?'foi':''}">${dia(s)}</li>`).join('')+`<li class="final">${dia(ENTREGA)} entrega</li>`;
+$('f-sabados').innerHTML=SABADOS.filter(s=>s>=hoje).map((s,i)=>`<label><input type="checkbox" name="sabados" value="${s}" id="f-s${i}"> ${dia(s)}</label>`).join('')||'<span class="suave">Os sábados de visita já passaram. Fale com a coordenação.</span>';
+
+let db=null,fs=null;
+$('form').onsubmit=async e=>{
+  e.preventDefault();
+  const d=Object.fromEntries(new FormData(e.target));d.sabados=[...e.target.querySelectorAll('[name=sabados]:checked')].map(x=>x.value);
+  if(!d.nome?.trim()||!d.whatsapp?.trim()){$('formMsg').textContent='Preencha pelo menos o nome e o WhatsApp.';return}
+  if(!d.sabados.length){$('formMsg').textContent='Marque pelo menos um sábado.';return}
+  $('formMsg').textContent='';
+  if(db){
+    $('enviar').disabled=true;
+    try{await fs.addDoc(fs.collection(db,'voluntarios'),{...d,criadoEm:fs.serverTimestamp(),aprovado:false});e.target.hidden=true;$('ok').classList.add('on')}
+    catch{$('formMsg').textContent='Não deu para enviar agora. Confira a internet e tente de novo.';$('enviar').disabled=false}
+    return;
+  }
+  const t={carro:'tenho carro e dou carona',carona:'preciso de carona',proprio:'vou por conta'}[d.transporte]||'a combinar';
+  const msg=`Oi! Quero ajudar nas visitas do Natal Social 2026.\nNome: ${d.nome}\nWhatsApp: ${d.whatsapp}${d.email?`\nEmail: ${d.email}`:''}\nSábados: ${d.sabados.map(dia).join(', ')}\nTransporte: ${t}`;
+  location.href=`https://wa.me/${ZAP_CADASTRO}?text=${encodeURIComponent(msg)}`;
+};
+
+$('contatos').innerHTML=CONTATOS.map(([n,t,z])=>`<a href="https://wa.me/${z}?text=${encodeURIComponent('Oi! Vim pela página do Natal Social 2026.')}" target="_blank" rel="noopener"><span>${n}</span><span>${t}</span></a>`).join('');
+
+if(FIREBASE){
+  const {initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+  fs=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+  db=fs.getFirestore(initializeApp(FIREBASE));
+  fs.onSnapshot(fs.doc(db,'publico','campanha'),s=>{if(s.exists()){Object.assign(CAMPANHA,s.data(),{exemplo:false});opcoes();mostrarMeta(CAMPANHA)}});
+}
+</script>
+</body></html>
