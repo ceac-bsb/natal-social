@@ -135,7 +135,7 @@ footer{margin-top:44px;border-top:1.5px solid var(--tinta);padding-top:16px;disp
   <div class="org"><a href="#inicio">Centro de Atividades Culturais - CEAC</a></div>
 
   <!-- 1. entrada -->
-  <section class="tela" id="inicio" aria-labelledby="t-inicio">
+  <section class="tela on" id="inicio" aria-labelledby="t-inicio">
     <div class="hero">
       <svg class="arte" data-casas aria-hidden="true"></svg>
       <div>
@@ -263,7 +263,8 @@ footer{margin-top:44px;border-top:1.5px solid var(--tinta);padding-top:16px;disp
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-<script type="module">
+<script>
+(function(){
 // ---------- configuração ----------
 const PIX={chave:'rod.lobo.mariano@gmail.com',nome:'Rodrigo Lobo Mariano',cidade:'SAO PAULO',cep:'05409000',descricao:'Natal Social 2026'};
 const CONTATOS=[['Rodrigo Lôbo','(61) 99825-3570','5561998253570'],['Anderson Maciel','(61) 99923-9137','5561999239137']];
@@ -347,7 +348,7 @@ let db=null,fs=null;
 $('form').onsubmit=async e=>{
   e.preventDefault();
   const d=Object.fromEntries(new FormData(e.target));d.sabados=[...e.target.querySelectorAll('[name=sabados]:checked')].map(x=>x.value);
-  if(!d.nome?.trim()||!d.whatsapp?.trim()){$('formMsg').textContent='Preencha pelo menos o nome e o WhatsApp.';return}
+  if(!(d.nome||'').trim()||!(d.whatsapp||'').trim()){$('formMsg').textContent='Preencha pelo menos o nome e o WhatsApp.';return}
   if(!d.sabados.length){$('formMsg').textContent='Marque pelo menos um sábado.';return}
   $('formMsg').textContent='';
   if(db){
@@ -364,11 +365,12 @@ $('form').onsubmit=async e=>{
 $('contatos').innerHTML=CONTATOS.map(([n,t,z])=>`<a href="https://wa.me/${z}?text=${encodeURIComponent('Oi! Vim pela página do Natal Social 2026.')}" target="_blank" rel="noopener">${n} <span>${t}</span></a>`).join('');
 
 opcoes();mostrarMeta(CAMPANHA);rota();
-if(FIREBASE){
+if(FIREBASE){(async()=>{
   const {initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
   fs=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
   db=fs.getFirestore(initializeApp(FIREBASE));
   fs.onSnapshot(fs.doc(db,'publico','campanha'),s=>{if(s.exists()){Object.assign(CAMPANHA,s.data());opcoes();mostrarMeta(CAMPANHA)}});
-}
+})()}
+})();
 </script>
 </body></html>
