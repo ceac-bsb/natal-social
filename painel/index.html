@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Painel · Natal Social 2026</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F4F4EF">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="painel.css">
+</head><body>
+<div class="wrap">
+  <div class="topo">
+    <div class="marca">
+      <svg viewBox="0 0 200 82" fill="none" aria-hidden="true"><path d="M-2 72 H12 V50 L27 38 L42 50 V72 H49 V41 H74 V72 H80 V53 L96 39 L112 53 V72 H119 V47 H138 V36 H150 V72 H157 V51 L172 41 L187 51 V72 H202" stroke="var(--verde)" stroke-width="5" stroke-linejoin="round"/><rect x="22" y="54" width="8" height="8" fill="var(--janela)"/><rect x="93" y="56" width="8" height="8" fill="var(--janela)"/><rect x="166" y="56" width="8" height="8" fill="var(--janela)"/></svg>
+      <div><b>Natal Social 2026</b><span>Painel da coordenação</span></div>
+    </div>
+    <div class="user" id="user"></div>
+  </div>
+  <div id="app"><p class="vazio" style="margin-top:30px">Carregando…</p></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {getFirestore,collection,doc,onSnapshot,addDoc,setDoc,updateDoc,deleteDoc,getDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const app=initializeApp({apiKey:"AIzaSyAfWGepsAcPbwQMVYLZyYtTH4BWglPfCmM",authDomain:"natal-social-ceac.firebaseapp.com",projectId:"natal-social-ceac",storageBucket:"natal-social-ceac.firebasestorage.app",messagingSenderId:"1014280497543",appId:"1:1014280497543:web:0a637ed96aa2a4ab1ecb22"});
+const auth=getAuth(app),db=getFirestore(app);
+const ADMIN='tiagomelolemos@gmail.com';
+const SITE='https://ceac-bsb.github.io/natal-social/';
+const SABADOS=['2026-11-07','2026-11-14','2026-11-21','2026-11-28','2026-12-05'];
+
+// ---------- estado ----------
+const S={user:null,admin:false,tes:false,acesso:{coordenadores:[],tesoureiros:[],equipe:[]},campanha:{familias:20,meta:20000,arrecadado:0,valorFamilia:1000},familias:[],visitas:[],voluntarios:[],doacoes:[]};
+let aba='resumo',editando=false,unsub=[];
+
+// ---------- utilidades ----------
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dia=s=>s?s.slice(8,10)+'/'+s.slice(5,7):'';
+const hoje=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const brl=v=>(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const digitos=z=>String(z||'').replace(/\D/g,'').replace(/^55(?=\d{10,11}$)/,'');
+const fone=z=>{z=digitos(z);return z.length>=10?`(${z.slice(0,2)}) ${z.slice(2,-4)}-${z.slice(-4)}`:(z||'sem número')};
+const zap=(z,txt)=>`https://wa.me/55${digitos(z)}?text=${encodeURIComponent(txt)}`;
+const primeiro=n=>String(n||'').trim().split(' ')[0];
+const fam=id=>S.familias.find(x=>x.id===id),vol=id=>S.voluntarios.find(x=>x.id===id);
+const token=()=>[...crypto.getRandomValues(new Uint8Array(15))].map(b=>'abcdefghijkmnpqrstuvwxyz23456789'[b%32]).join('');
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+async function copiar(t,m){try{await navigator.clipboard.writeText(t);toast(m)}catch{toast('Não deu para copiar: selecione o texto e copie.')}}
+const falhou=e=>{console.error(e);toast(e?.code==='permission-denied'?'Sem permissão para isso.':'Não deu para salvar. Confira a internet e tente de novo.')};
+const transp=p=>p.transporte==='carro'?`<span class="chip c-carro">🚗 carro${p.vagas?` · ${p.vagas} vagas`:''}</span>`:p.transporte==='carona'?`<span class="chip c-carona">precisa de carona</span>`:p.transporte==='proprio'?`<span class="chip c-neutro">vai por conta</span>`:'';
+const casaSvg=`<svg viewBox="0 0 160 120" aria-label="Sem foto da fachada"><rect width="160" height="120" fill="var(--verde-claro)"/><path d="M40 92V58l40-28 40 28v34" fill="none" stroke="var(--verde)" stroke-width="5" stroke-linejoin="round"/><rect x="68" y="66" width="24" height="26" fill="none" stroke="var(--verde)" stroke-width="4"/></svg>`;
+const fachada=f=>f?.foto?`<img src="${f.foto}" alt="Fachada da casa da ${esc(f.nome)}">`:casaSvg;
+
+// ---------- login ----------
+function telaEntrar(msg){
+  $('#user').innerHTML='';
+  $('#app').innerHTML=`<div class="entrar card"><svg viewBox="0 0 64 64" width="56"><rect width="64" height="64" rx="14" fill="#1D6B3A"/><path d="M14 50V29L32 14l18 15v21" fill="none" stroke="#F4F4EF" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><rect x="26" y="31" width="12" height="11" rx="1.5" fill="#F2B33D"/><path d="M8 50h48" stroke="#F4F4EF" stroke-width="5" stroke-linecap="round"/></svg>
+   <h1>Painel da coordenação</h1><p>${msg||'Entre com a sua conta Google. Só os coordenadores do Natal Social têm acesso.'}</p>
+   <button class="btn pri" id="entrar">Entrar com Google</button>
+   ${msg?'<p style="margin-top:14px"><button class="mini-link" id="sair2">Entrar com outra conta</button></p>':''}</div>`;
+  $('#entrar').onclick=entrar;$('#sair2')&&($('#sair2').onclick=()=>signOut(auth));
+}
+async function entrar(){
+  const p=new GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
+  try{await signInWithPopup(auth,p)}catch(e){if(e?.code==='auth/popup-blocked'||e?.code==='auth/operation-not-supported-in-this-environment')signInWithRedirect(auth,p);else if(e?.code!=='auth/popup-closed-by-user'&&e?.code!=='auth/cancelled-popup-request')toast('Não deu para entrar. Tente de novo.')}
+}
+onAuthStateChanged(auth,async u=>{
+  unsub.forEach(f=>f());unsub=[];S.user=u;
+  if(!u){telaEntrar();return}
+  const email=(u.email||'').toLowerCase();S.admin=email===ADMIN;
+  $('#user').innerHTML=`${u.photoURL?`<img src="${u.photoURL}" alt="">`:''}<span>${esc(primeiro(u.displayName)||email)}</span><button id="sair">Sair</button>`;$('#sair').onclick=()=>signOut(auth);
+  try{
+    const a=await getDoc(doc(db,'config','acesso'));
+    if(!a.exists()){
+      if(!S.admin){telaEntrar(`O email ${esc(email)} ainda não tem acesso. Peça para o Tiago liberar.`);return}
+      await setDoc(doc(db,'config','acesso'),{coordenadores:[ADMIN],tesoureiros:[ADMIN],equipe:[{nome:'Tiago Lemos',email:ADMIN,zap:'',tes:true}]});
+    }
+    const c=await getDoc(doc(db,'publico','campanha'));
+    if(!c.exists()&&S.admin)await setDoc(doc(db,'publico','campanha'),{familias:20,meta:20000,arrecadado:0,valorFamilia:1000});
+  }catch(e){telaEntrar(`O email ${esc(email)} ainda não tem acesso. Peça para o Tiago liberar.`);return}
+  ouvir();
+});
+function ouvir(){
+  const sub=(ref,fn)=>unsub.push(onSnapshot(ref,fn,e=>console.error(e)));
+  sub(doc(db,'config','acesso'),s=>{S.acesso=Object.assign({coordenadores:[],tesoureiros:[],equipe:[]},s.data());const em=(S.user.email||'').toLowerCase();S.tes=S.admin||S.acesso.tesoureiros.includes(em);render()});
+  sub(doc(db,'publico','campanha'),s=>{if(s.exists())S.campanha=s.data();render()});
+  for(const k of ['familias','visitas','voluntarios','doacoes'])sub(collection(db,k),s=>{S[k]=s.docs.map(d=>({id:d.id,...d.data()}));if(k==='doacoes')conferirArrecadado();render()});
+}
+function conferirArrecadado(){
+  if(!S.tes)return;const soma=S.doacoes.reduce((a,d)=>a+(d.tipo==='entrada'?+d.valor||0:0),0);
+  if(soma!==(+S.campanha.arrecadado||0))setDoc(doc(db,'publico','campanha'),{arrecadado:soma,atualizado:serverTimestamp()},{merge:true}).catch(falhou);
+}
+
+// ---------- link da visita (o que o voluntário abre) ----------
+function linkDoc(v){
+  const f=fam(v.familia)||{};
+  return {data:v.data,saida:v.saida||'',retorno:v.retorno||'',encontro:v.encontro||'',encontroMapa:v.encontroMapa||'',
+    familia:{nome:f.nome||'',resp:f.resp||'',zap:digitos(f.zap),end:f.end||'',mapa:f.mapa||'',pessoas:+f.pessoas||0,criancas:f.criancas||'',foto:f.foto||''},
+    responsavel:{nome:v.respNome||'',zap:digitos(v.respZap)},
+    equipe:(v.equipe||[]).map(id=>{const p=vol(id)||{};return {nome:p.nome||'',transporte:p.transporte||'',vagas:+p.vagas||0}}),
+    atualizado:serverTimestamp()};
+}
+const urlVisita=v=>`${SITE}visita/#${v.token}`;
+function avisoTexto(v,p){
+  const f=fam(v.familia)||{};
+  return `Oi, ${primeiro(p.nome)}! Subimos uma visita do Natal Social para você 🎄\n\nSábado, ${dia(v.data)}\nSaída: ${v.saida} · ${v.encontro}\nRetorno previsto: ${v.retorno}\nFamília: ${f.nome||''}\n\nEndereço, foto da casa, contato da família e quem vai junto:\n${urlVisita(v)}\n\nConfirma pra gente?`;
+}
+function textoGrupo(v){
+  const f=fam(v.familia)||{},eq=(v.equipe||[]).map(vol).filter(Boolean);
+  return `🎄 Visita do Natal Social · sábado ${dia(v.data)}\nSaída: ${v.saida} · ${v.encontro}\nRetorno previsto: ${v.retorno}\nFamília: ${f.nome||''}\nResponsável: ${v.respNome||''}\nVão: ${eq.map(p=>p.nome).join(', ')||'—'}\n\nTudo da visita (mapa, foto da casa, contato):\n${urlVisita(v)}`;
+}
+
+// ---------- telas ----------
+function render(){
+  if(!S.user||editando)return;
+  const arr=+S.campanha.arrecadado||0,meta=+S.campanha.meta||0,pct=meta?Math.min(100,Math.round(arr/meta*100)):0;
+  const pend=S.voluntarios.filter(p=>!p.aprovado).length,semRel=S.visitas.filter(v=>v.data<=hoje()&&!v.relatorio).length;
+  const abas=[['resumo','Resumo'],['visitas','Visitas',semRel],['familias','Famílias'],['voluntarios','Voluntários',pend],['doacoes','Doações']];
+  if(S.admin)abas.push(['acessos','Acessos']);
+  let h=`<nav class="abas" aria-label="Seções">${abas.map(([k,n,c])=>`<button data-aba="${k}" class="${aba===k?'on':''}">${n}${c?`<span>${c}</span>`:''}</button>`).join('')}</nav>`;
+  if(aba==='resumo'){
+    const prox=S.visitas.filter(v=>v.data>=hoje()).sort((a,b)=>(a.data+a.saida).localeCompare(b.data+b.saida));
+    const garantidas=S.campanha.valorFamilia?Math.min(S.campanha.familias,Math.floor(arr/S.campanha.valorFamilia)):0;
+    h+=`<h2>Resumo</h2><div class="kpis">
+      <div class="card kpi"><small>Meta de arrecadação</small><b>${pct}%</b><em>${brl(arr)} de ${brl(meta)}</em><div class="barra"><i style="width:${pct}%"></i></div></div>
+      <div class="card kpi"><small>Famílias garantidas</small><b>${garantidas} de ${S.campanha.familias}</b><em>${brl(S.campanha.valorFamilia)} por família</em></div>
+      <div class="card kpi"><small>Famílias cadastradas</small><b>${S.familias.length}</b><em>${S.familias.filter(f=>f.status&&f.status!=='visitar').length} já visitadas</em></div>
+      <div class="card kpi"><small>Voluntários</small><b>${S.voluntarios.length}</b><em>${pend} aguardando aprovação</em></div></div>
+     <h2>Próximas visitas</h2><div class="grade">${prox.map(cardVisita).join('')||'<p class="vazio">Nenhuma visita marcada. Crie em Visitas.</p>'}</div>
+     <h2>Coordenação</h2><div class="card">${S.acesso.equipe.map(c=>`<div class="linha"><div class="min"><b>${esc(c.nome)}</b><div class="sub">${esc(c.email)}${c.tes?' · lança doações':''}</div></div><span class="sub">${fone(c.zap)}</span></div>`).join('')||'<p class="vazio">Ninguém cadastrado.</p>'}</div>`;
+  }
+  if(aba==='visitas'){
+    const vs=[...S.visitas].sort((a,b)=>(b.data>=hoje())-(a.data>=hoje())||(a.data>=hoje()?1:-1)*(a.data+a.saida).localeCompare(b.data+b.saida));
+    h+=`<h2>Visitas <button class="btn pri" data-acao="nova-visita">+ Nova visita</button></h2><div id="form-visita"></div>`;
+    const grupos={};vs.forEach(v=>(grupos[v.data]=grupos[v.data]||[]).push(v));
+    h+=Object.keys(grupos).map(d=>`<h3 style="margin:18px 0 10px">Sábado ${dia(d)}${d<hoje()?' · <span class="sub">já passou</span>':''}</h3><div class="grade">${grupos[d].map(cardVisita).join('')}</div>`).join('')||'<p class="vazio">Nenhuma visita ainda. Cadastre as famílias e depois crie a visita.</p>';
+  }
+  if(aba==='familias'){
+    h+=`<h2>Famílias <button class="btn pri" data-acao="nova-familia">+ Cadastrar família</button></h2><div id="form-familia"></div>
+     <div class="grade">${[...S.familias].sort((a,b)=>(a.nome||'').localeCompare(b.nome||'')).map(cardFamilia).join('')||'<p class="vazio">Nenhuma família cadastrada ainda.</p>'}</div>`;
+  }
+  if(aba==='voluntarios'){
+    const vs=[...S.voluntarios].sort((a,b)=>(a.aprovado-b.aprovado)||(a.nome||'').localeCompare(b.nome||''));
+    h+=`<h2>Voluntários <button class="btn" data-acao="novo-vol">+ Cadastrar</button></h2><p class="sub" style="margin-top:-6px">Quem se cadastra pela página do QR aparece aqui. Aprove para poder colocar numa visita.</p><div id="form-vol"></div>
+     <div class="card">${vs.map(p=>`<div class="linha"><div class="min"><b>${esc(p.nome)}</b><div class="sub">${fone(p.whatsapp)}${p.email?' · '+esc(p.email):''}</div><div class="pessoas">${(p.sabados||[]).map(s=>`<span class="chip c-neutro">${dia(s)}</span>`).join('')}${transp(p)}</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">${p.aprovado?'<span class="chip c-ok">aprovado</span>':`<button class="btn peq pri" data-aprovar="${p.id}">Aprovar</button>`}<a class="mini-link" href="${zap(p.whatsapp,'Oi, '+primeiro(p.nome)+'! Aqui é da coordenação do Natal Social do CEAC.')}" target="_blank" rel="noopener">WhatsApp</a><button class="mini-link perigo" data-del-vol="${p.id}">Remover</button></div></div>`).join('')||'<p class="vazio">Ninguém se cadastrou ainda.</p>'}</div>`;
+  }
+  if(aba==='doacoes'){
+    const gasto=S.doacoes.reduce((a,d)=>a+(d.tipo==='saida'?+d.valor||0:0),0);
+    h+=`<h2>Doações</h2><div class="kpis"><div class="card kpi"><small>Arrecadado</small><b>${brl(arr)}</b><em>${pct}% da meta</em></div><div class="card kpi"><small>Gasto</small><b>${brl(gasto)}</b><em>cestas e brinquedos</em></div><div class="card kpi"><small>Saldo</small><b>${brl(arr-gasto)}</b></div><div class="card kpi"><small>Meta</small><b>${brl(meta)}</b><em>${S.campanha.familias} famílias × ${brl(S.campanha.valorFamilia)}</em></div></div>`;
+    if(S.tes)h+=`<h2>Lançar</h2><form class="card cad" id="f-doacao"><label class="f">Tipo<select id="d-tipo"><option value="entrada">Entrada (doação)</option><option value="saida">Saída (compra)</option></select></label><label class="f">Valor (R$)<input id="d-valor" inputmode="decimal" required></label><label class="f full">Descrição<input id="d-quem" placeholder="ex.: doações do PIX de hoje, compra de 10 cestas" required></label><label class="f">Data<input id="d-data" type="date" value="${hoje()}"></label><div class="full"><button class="btn pri" type="submit">Lançar</button></div></form>
+      <details class="card" style="margin-top:14px"><summary style="cursor:pointer;font-weight:700">Ajustar a meta</summary><form class="cad" id="f-meta" style="margin-top:12px"><label class="f">Meta (R$)<input id="m-meta" inputmode="numeric" value="${meta}"></label><label class="f">Famílias<input id="m-fam" type="number" min="1" value="${S.campanha.familias}"></label><label class="f">Valor por família (R$)<input id="m-vf" inputmode="numeric" value="${S.campanha.valorFamilia}"></label><div class="full"><button class="btn pri" type="submit">Salvar meta</button></div></form></details>`;
+    else h+=`<p class="so-leitura">Só o tesoureiro (Rodrigo Lôbo) lança doações. A meta da página pública atualiza junto.</p>`;
+    h+=`<h2>Lançamentos</h2><div class="card">${[...S.doacoes].sort((a,b)=>(b.data||'').localeCompare(a.data||'')).map(d=>`<div class="linha"><div class="min"><b>${esc(d.quem)}</b><div class="sub">${dia(d.data)}${d.por?' · '+esc(d.por):''}</div></div><div style="text-align:right"><b style="color:${d.tipo==='entrada'?'var(--verde)':'var(--alerta)'};font-variant-numeric:tabular-nums">${d.tipo==='entrada'?'+':'−'} ${brl(d.valor)}</b>${S.tes?`<br><button class="mini-link perigo" data-del-doacao="${d.id}">Apagar</button>`:''}</div></div>`).join('')||'<p class="vazio">Nenhum lançamento ainda.</p>'}</div>`;
+  }
+  if(aba==='acessos'&&S.admin){
+    h+=`<h2>Acessos</h2><p class="sub" style="margin-top:-6px">Quem está aqui entra no painel com a conta Google desse email. Marque quem lança doações.</p>
+     <div class="card">${S.acesso.equipe.map((c,i)=>`<div class="linha"><div class="min"><b>${esc(c.nome)}</b><div class="sub">${esc(c.email)} · ${fone(c.zap)}</div></div><div style="display:flex;gap:10px;align-items:center"><label class="sub" style="display:flex;gap:4px;align-items:center"><input type="checkbox" data-tes="${i}" ${c.tes?'checked':''} ${c.email===ADMIN?'disabled':''} style="accent-color:var(--verde)"> doações</label>${c.email===ADMIN?'':`<button class="mini-link perigo" data-del-acesso="${i}">Tirar</button>`}</div></div>`).join('')}</div>
+     <form class="card cad" id="f-acesso" style="margin-top:14px"><label class="f">Nome<input id="a-nome" required></label><label class="f">Email Google<input id="a-email" type="email" required></label><label class="f">WhatsApp<input id="a-zap" inputmode="tel"></label><label class="f" style="flex-direction:row;align-items:center;gap:8px;display:flex"><input type="checkbox" id="a-tes" style="accent-color:var(--verde);width:18px;height:18px"> lança doações</label><div class="full"><button class="btn pri" type="submit">Dar acesso</button></div></form>`;
+  }
+  $('#app').innerHTML=h;
+}
+function cardFamilia(f){
+  const ult=S.visitas.filter(v=>v.familia===f.id&&v.relatorio).sort((a,b)=>b.data.localeCompare(a.data))[0];
+  const st=f.status==='visitada'?'<span class="chip c-ok">visitada</span>':f.status==='entregue'?'<span class="chip c-ok">entregue</span>':'<span class="chip c-pend">a visitar</span>';
+  return `<div class="card"><div class="visita-cab"><div class="foto">${fachada(f)}</div><div class="min"><h3>${esc(f.nome)}</h3><div class="sub">${esc(f.end)}</div><div style="margin-top:6px">${st}</div></div></div>
+   <dl class="kv"><dt>Responsável</dt><dd>${esc(f.resp)} · ${fone(f.zap)}</dd><dt>Na casa</dt><dd>${+f.pessoas||'?'} pessoas</dd><dt>Crianças</dt><dd>${esc(f.criancas)||'—'}</dd><dt>Pedidos</dt><dd>${esc(f.pedidos)||'—'}</dd>${ult?`<dt>Última visita</dt><dd>${dia(ult.data)} · ${esc(String(ult.relatorio.texto||'').slice(0,90))}</dd>`:''}</dl>
+   <div class="acoes">${f.mapa?`<a class="btn peq" href="${esc(f.mapa)}" target="_blank" rel="noopener">Abrir no mapa</a>`:''}${f.zap?`<a class="btn peq" href="${zap(f.zap,'Oi, '+primeiro(f.resp)+'! Aqui é do Natal Social do CEAC.')}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button class="btn peq" data-edit-fam="${f.id}">Editar</button></div><div id="ef-${f.id}"></div></div>`;
+}
+function cardVisita(v){
+  const f=fam(v.familia)||{nome:'(família removida)'},eq=(v.equipe||[]).map(vol).filter(Boolean);
+  const vagas=eq.filter(p=>p.transporte==='carro').reduce((a,p)=>a+(+p.vagas||0),0),caronas=eq.filter(p=>p.transporte==='carona').length;
+  const passou=v.data<=hoje();
+  return `<div class="card"><div class="visita-cab"><div class="foto">${fachada(f)}</div><div class="min"><div class="sub">Sábado ${dia(v.data)} · ${esc(v.saida)} às ${esc(v.retorno)}</div><h3>${esc(f.nome)}</h3><div class="sub">${esc(f.end)}</div></div></div>
+   <dl class="kv"><dt>Responsável</dt><dd>${esc(v.respNome)||'—'}</dd><dt>Encontro</dt><dd>${esc(v.encontro)}</dd><dt>Equipe</dt><dd>${eq.length+1} pessoas</dd><dt>Carona</dt><dd>${caronas} precisam · ${vagas} vagas${caronas>vagas?' <span class="chip c-pend">faltam vagas</span>':''}</dd></dl>
+   <div class="pessoas">${eq.map(p=>`<span class="chip c-neutro">${esc(primeiro(p.nome))}</span>`).join('')}</div>
+   ${blocoRelatorio(v)}<div id="rel-${v.id}"></div><div id="ev-${v.id}"></div>
+   <div class="acoes"><a class="btn peq" href="${urlVisita(v)}" target="_blank" rel="noopener">Ver link da visita</a><button class="btn peq" data-grupo="${v.id}">Copiar msg do grupo</button>${eq.map(p=>`<a class="btn peq" href="${zap(p.whatsapp,avisoTexto(v,p))}" target="_blank" rel="noopener">Avisar ${esc(primeiro(p.nome))}</a>`).join('')}${passou?`<button class="btn peq pri" data-relatorio="${v.id}">${v.relatorio?'Editar relatório':'Escrever relatório'}</button>`:''}<button class="btn peq" data-edit-vis="${v.id}">Editar</button></div></div>`;
+}
+const STATUS_REL={feita:['Visita feita','c-ok'],ausente:['Família não estava','c-pend'],remarcar:['Remarcar','c-pend']};
+function blocoRelatorio(v){
+  const r=v.relatorio;if(!r)return v.data<=hoje()?'<div class="rel"><span class="chip c-pend">sem relatório</span></div>':'';
+  const [n,c]=STATUS_REL[r.status]||STATUS_REL.feita;
+  return `<div class="rel"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>Relatório</b><span class="chip ${c}">${n}</span></div><p>${esc(r.texto)}</p>${r.pedidos?`<p><b>Pedidos:</b> ${esc(r.pedidos)}</p>`:''}<div class="sub" style="margin-top:6px">${esc(r.autor)} · ${dia(r.data)}</div></div>`;
+}
+
+// ---------- formulários ----------
+const opcoesCoord=sel=>S.acesso.equipe.map((c,i)=>`<option value="${i}" ${sel===c.nome?'selected':''}>${esc(c.nome)}</option>`).join('');
+function formVisita(v={}){
+  const datas=[...new Set([...SABADOS,v.data].filter(Boolean))].sort();
+  return `<form class="card cad" id="f-visita" data-id="${v.id||''}" style="margin:12px 0">
+   <label class="f">Sábado<select id="v-data">${datas.map(s=>`<option value="${s}" ${v.data===s?'selected':''}>${dia(s)}</option>`).join('')}</select></label>
+   <label class="f">Família<select id="v-fam" required>${S.familias.map(f=>`<option value="${f.id}" ${v.familia===f.id?'selected':''}>${esc(f.nome)}</option>`).join('')}</select></label>
+   <label class="f">Responsável pela visita<select id="v-resp">${opcoesCoord(v.respNome)}</select></label>
+   <label class="f">Ponto de encontro<input id="v-enc" value="${esc(v.encontro||'Estacionamento do CEAC')}"></label>
+   <label class="f">Saída<input id="v-saida" type="time" value="${v.saida||'09:00'}"></label>
+   <label class="f">Retorno previsto<input id="v-ret" type="time" value="${v.retorno||'12:00'}"></label>
+   <label class="f full">Link do mapa do ponto de encontro (opcional)<input id="v-encmapa" value="${esc(v.encontroMapa||'')}" placeholder="cole o link do Google Maps"></label>
+   <fieldset class="full" style="border:0;padding:0;margin:0"><legend class="sub" style="font-weight:700;margin-bottom:6px">Quem vai (voluntários aprovados)</legend><div class="pessoas">${S.voluntarios.filter(p=>p.aprovado).map(p=>`<label class="chip c-neutro" style="cursor:pointer"><input type="checkbox" value="${p.id}" ${(v.equipe||[]).includes(p.id)?'checked':''} style="accent-color:var(--verde)"> ${esc(p.nome)}${p.transporte?' · '+({carro:'carro',carona:'carona',proprio:'por conta'}[p.transporte]):''}</label>`).join('')||'<span class="sub">Nenhum voluntário aprovado ainda.</span>'}</div></fieldset>
+   <div class="full"><button class="btn pri" type="submit">${v.id?'Salvar':'Criar visita'}</button> <button class="btn" type="button" data-acao="fechar">Cancelar</button>${v.id?` <button class="btn perigo" type="button" data-del-vis="${v.id}">Apagar visita</button>`:''}</div></form>`;
+}
+function formFamilia(f={}){
+  return `<form class="card cad" id="f-familia" data-id="${f.id||''}" style="margin:12px 0">
+   <label class="f">Nome da família<input id="ff-nome" value="${esc(f.nome||'')}" placeholder="Família Santos" required></label>
+   <label class="f">Responsável (quem recebe)<input id="ff-resp" value="${esc(f.resp||'')}"></label>
+   <label class="f">WhatsApp do responsável<input id="ff-zap" inputmode="tel" value="${esc(f.zap||'')}" placeholder="61 9 0000-0000"></label>
+   <label class="f">Pessoas na casa<input id="ff-pes" type="number" min="1" value="${f.pessoas||''}"></label>
+   <label class="f full">Crianças (quantas, idades e o brinquedo que pediram)<textarea id="ff-cri" placeholder="3 crianças: menina 4 anos (boneca), menino 7 (bola), menino 10 (carrinho)">${esc(f.criancas||'')}</textarea></label>
+   <label class="f full">Endereço<input id="ff-end" value="${esc(f.end||'')}" placeholder="Quadra, conjunto, casa · setor"></label>
+   <label class="f full">Localização (link do mapa)<span class="linha-form"><input id="ff-mapa" value="${esc(f.mapa||'')}" placeholder="cole o link do Google Maps" style="flex:1;min-width:0"><button class="btn peq" type="button" id="ff-gps">📍 Estou na casa</button></span></label>
+   <label class="f full">Pedidos<textarea id="ff-ped" placeholder="cesta básica, presentes, necessidades">${esc(f.pedidos||'')}</textarea></label>
+   <label class="f">Situação<select id="ff-st">${[['visitar','a visitar'],['visitada','visitada'],['entregue','entregue']].map(([k,n])=>`<option value="${k}" ${(f.status||'visitar')===k?'selected':''}>${n}</option>`).join('')}</select></label>
+   <label class="f">Foto da fachada<input id="ff-foto" type="file" accept="image/*"></label>
+   <img class="foto-prev" id="ff-prev" ${f.foto?`src="${f.foto}"`:'hidden'} alt="">
+   <div class="full"><button class="btn pri" type="submit">${f.id?'Salvar':'Cadastrar'}</button> <button class="btn" type="button" data-acao="fechar">Cancelar</button>${f.id?` <button class="btn perigo" type="button" data-del-fam="${f.id}">Apagar família</button>`:''}</div></form>`;
+}
+function formRelatorio(v){
+  const r=v.relatorio||{},f=fam(v.familia)||{};
+  return `<form class="cad" id="f-rel" data-v="${v.id}" style="margin-top:12px;border-top:1px dashed var(--fio);padding-top:12px">
+   <label class="f full">Como foi a visita<select id="r-status">${Object.entries(STATUS_REL).map(([k,[n]])=>`<option value="${k}" ${r.status===k?'selected':''}>${n}</option>`).join('')}</select></label>
+   <label class="f full">Relato<textarea id="r-texto" placeholder="Como a família recebeu, quem mora lá, o que chamou atenção, referência para achar a casa">${esc(r.texto||'')}</textarea></label>
+   <label class="f">Pessoas na casa<input id="r-pes" type="number" min="1" value="${r.pessoas||f.pessoas||''}"></label>
+   <label class="f full">Crianças e brinquedos (atualizado)<textarea id="r-cri">${esc(r.criancas||f.criancas||'')}</textarea></label>
+   <label class="f full">Pedidos (atualizados)<textarea id="r-ped">${esc(r.pedidos||f.pedidos||'')}</textarea></label>
+   <div class="full"><button class="btn pri" type="submit">Salvar relatório</button> <button class="btn" type="button" data-acao="fechar">Cancelar</button></div></form>`;
+}
+function formVol(){
+  return `<form class="card cad" id="f-vol" style="margin:12px 0"><label class="f">Nome<input id="nv-nome" required></label><label class="f">WhatsApp<input id="nv-zap" inputmode="tel" required></label>
+   <label class="f">Como vai<select id="nv-t"><option value="carona">Precisa de carona</option><option value="carro">Tem carro e dá carona</option><option value="proprio">Vai por conta</option></select></label><label class="f">Vagas no carro<input id="nv-vagas" type="number" min="0" value="0"></label>
+   <div class="full"><button class="btn pri" type="submit">Cadastrar já aprovado</button> <button class="btn" type="button" data-acao="fechar">Cancelar</button></div></form>`;
+}
+function abrir(sel,html){editando=true;$(sel).innerHTML=html;$(sel).querySelector('input,select,textarea')?.focus({preventScroll:true});$(sel).scrollIntoView({behavior:'smooth',block:'nearest'})}
+function fechar(){editando=false;render()}
+
+async function comprimir(arq){
+  const url=URL.createObjectURL(arq);const img=new Image();img.src=url;await img.decode();
+  const k=Math.min(1,900/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);return c.toDataURL('image/jpeg',.72);
+}
+async function syncLinks(filtro){
+  for(const v of S.visitas.filter(filtro))if(v.token)await setDoc(doc(db,'links',v.token),linkDoc(v)).catch(falhou);
+}
+
+// ---------- eventos ----------
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.aba){aba=t.dataset.aba;editando=false;render();return}
+  if(t.dataset.acao==='fechar'){fechar();return}
+  if(t.dataset.acao==='nova-visita'){if(!S.familias.length){toast('Cadastre uma família primeiro.');return}abrir('#form-visita',formVisita());return}
+  if(t.dataset.acao==='nova-familia'){abrir('#form-familia',formFamilia());return}
+  if(t.dataset.acao==='novo-vol'){abrir('#form-vol',formVol());return}
+  if(t.dataset.editFam){abrir('#ef-'+t.dataset.editFam,formFamilia(fam(t.dataset.editFam)));return}
+  if(t.dataset.editVis){abrir('#ev-'+t.dataset.editVis,formVisita(S.visitas.find(v=>v.id===t.dataset.editVis)));return}
+  if(t.dataset.relatorio){abrir('#rel-'+t.dataset.relatorio,formRelatorio(S.visitas.find(v=>v.id===t.dataset.relatorio)));return}
+  if(t.dataset.grupo){copiar(textoGrupo(S.visitas.find(v=>v.id===t.dataset.grupo)),'Mensagem copiada. Cole onde quiser.');return}
+  if(t.dataset.aprovar){updateDoc(doc(db,'voluntarios',t.dataset.aprovar),{aprovado:true}).then(()=>toast('Aprovado. Agora ele pode entrar numa visita.')).catch(falhou);return}
+  if(t.id==='ff-gps'){if(!navigator.geolocation){toast('Este aparelho não dá a localização.');return}toast('Pegando a localização…');navigator.geolocation.getCurrentPosition(p=>{$('#ff-mapa').value=`https://maps.google.com/?q=${p.coords.latitude.toFixed(6)},${p.coords.longitude.toFixed(6)}`;toast('Localização da casa salva no campo.')},()=>toast('Não deu para pegar a localização. Libere o acesso no navegador.'),{enableHighAccuracy:true,timeout:15000});return}
+  // apagar: pede um segundo toque no mesmo botão
+  const apagar=async(fn,msg)=>{if(t.dataset.certeza){await fn().then(()=>{toast(msg);fechar()}).catch(falhou)}else{t.dataset.certeza=1;t.textContent='Toque de novo para confirmar';setTimeout(()=>{delete t.dataset.certeza},4000)}};
+  if(t.dataset.delVol)return apagar(()=>deleteDoc(doc(db,'voluntarios',t.dataset.delVol)),'Voluntário removido.');
+  if(t.dataset.delDoacao)return apagar(()=>deleteDoc(doc(db,'doacoes',t.dataset.delDoacao)),'Lançamento apagado.');
+  if(t.dataset.delFam)return apagar(()=>deleteDoc(doc(db,'familias',t.dataset.delFam)),'Família apagada.');
+  if(t.dataset.delVis){const v=S.visitas.find(x=>x.id===t.dataset.delVis);return apagar(async()=>{if(v?.token)await deleteDoc(doc(db,'links',v.token));await deleteDoc(doc(db,'visitas',v.id))},'Visita apagada.')}
+  if(t.dataset.delAcesso){const eq=S.acesso.equipe.filter((_,i)=>i!=t.dataset.delAcesso);return apagar(()=>salvarAcesso(eq),'Acesso retirado.')}
+});
+document.addEventListener('change',async e=>{
+  if(e.target.id==='ff-foto'&&e.target.files[0]){try{const d=await comprimir(e.target.files[0]);e.target.dataset.foto=d;$('#ff-prev').src=d;$('#ff-prev').hidden=false}catch{toast('Não deu para ler essa foto.')}}
+  if(e.target.dataset.tes!==undefined){const eq=S.acesso.equipe.map((c,i)=>i==e.target.dataset.tes?{...c,tes:e.target.checked}:c);salvarAcesso(eq).then(()=>toast('Acesso atualizado.')).catch(falhou)}
+});
+function salvarAcesso(eq){
+  return setDoc(doc(db,'config','acesso'),{equipe:eq,coordenadores:[...new Set([ADMIN,...eq.map(c=>c.email.toLowerCase())])],tesoureiros:[...new Set([ADMIN,...eq.filter(c=>c.tes).map(c=>c.email.toLowerCase())])]});
+}
+document.addEventListener('submit',async e=>{
+  e.preventDefault();const f=e.target,btn=f.querySelector('[type=submit]');btn&&(btn.disabled=true);
+  try{
+    if(f.id==='f-familia'){
+      const d={nome:$('#ff-nome').value.trim()||'Família sem nome',resp:$('#ff-resp').value.trim(),zap:digitos($('#ff-zap').value),pessoas:+$('#ff-pes').value||0,criancas:$('#ff-cri').value.trim(),end:$('#ff-end').value.trim(),mapa:$('#ff-mapa').value.trim(),pedidos:$('#ff-ped').value.trim(),status:$('#ff-st').value};
+      if($('#ff-foto').dataset.foto)d.foto=$('#ff-foto').dataset.foto;
+      if(f.dataset.id){await updateDoc(doc(db,'familias',f.dataset.id),d);Object.assign(fam(f.dataset.id),d);await syncLinks(v=>v.familia===f.dataset.id)}
+      else await addDoc(collection(db,'familias'),{...d,criadoPor:S.user.displayName||S.user.email,criadoEm:serverTimestamp()});
+      toast('Família salva.');fechar();
+    }
+    if(f.id==='f-visita'){
+      const c=S.acesso.equipe[+$('#v-resp').value]||{};
+      const v={data:$('#v-data').value,familia:$('#v-fam').value,respNome:c.nome||'',respZap:digitos(c.zap),encontro:$('#v-enc').value.trim(),encontroMapa:$('#v-encmapa').value.trim(),saida:$('#v-saida').value,retorno:$('#v-ret').value,equipe:[...f.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value)};
+      const old=S.visitas.find(x=>x.id===f.dataset.id);
+      v.token=old?.token||token();
+      await setDoc(doc(db,'links',v.token),linkDoc(v));
+      if(old)await updateDoc(doc(db,'visitas',old.id),v);else await addDoc(collection(db,'visitas'),{...v,criadoEm:serverTimestamp()});
+      toast(old?'Visita salva. O link já está atualizado.':'Visita criada. Use "Avisar" para mandar o link a cada um.');fechar();
+    }
+    if(f.id==='f-rel'){
+      const v=S.visitas.find(x=>x.id===f.dataset.v),fa=fam(v.familia);
+      const r={status:$('#r-status').value,texto:$('#r-texto').value.trim()||'—',pessoas:+$('#r-pes').value||0,criancas:$('#r-cri').value.trim(),pedidos:$('#r-ped').value.trim(),autor:S.user.displayName||S.user.email,data:hoje()};
+      await updateDoc(doc(db,'visitas',v.id),{relatorio:r});
+      if(fa){const up={};if(r.pessoas)up.pessoas=r.pessoas;if(r.criancas)up.criancas=r.criancas;if(r.pedidos)up.pedidos=r.pedidos;if(r.status==='feita'&&fa.status!=='entregue')up.status='visitada';await updateDoc(doc(db,'familias',fa.id),up);Object.assign(fa,up);await syncLinks(x=>x.familia===fa.id)}
+      toast('Relatório salvo. A ficha da família foi atualizada.');fechar();
+    }
+    if(f.id==='f-vol'){
+      await addDoc(collection(db,'voluntarios'),{nome:$('#nv-nome').value.trim(),whatsapp:digitos($('#nv-zap').value),email:'',sabados:[],transporte:$('#nv-t').value,vagas:+$('#nv-vagas').value||0,aprovado:true,criadoEm:serverTimestamp()});
+      toast('Voluntário cadastrado.');fechar();
+    }
+    if(f.id==='f-doacao'){
+      const valor=parseFloat($('#d-valor').value.replace(/\./g,'').replace(',','.'));if(!valor){toast('Informe um valor.');btn.disabled=false;return}
+      await addDoc(collection(db,'doacoes'),{tipo:$('#d-tipo').value,valor,quem:$('#d-quem').value.trim(),data:$('#d-data').value||hoje(),por:primeiro(S.user.displayName)||S.user.email,criadoEm:serverTimestamp()});
+      toast('Lançado. A meta da página pública atualiza junto.');f.reset();$('#d-data').value=hoje();btn.disabled=false;
+    }
+    if(f.id==='f-meta'){
+      const n=s=>parseFloat(String(s).replace(/\./g,'').replace(',','.'))||0;
+      await setDoc(doc(db,'publico','campanha'),{meta:n($('#m-meta').value),familias:+$('#m-fam').value||20,valorFamilia:n($('#m-vf').value),atualizado:serverTimestamp()},{merge:true});
+      toast('Meta salva.');
+    }
+    if(f.id==='f-acesso'){
+      const email=$('#a-email').value.trim().toLowerCase();
+      if(S.acesso.equipe.some(c=>c.email===email)){toast('Esse email já tem acesso.');btn.disabled=false;return}
+      await salvarAcesso([...S.acesso.equipe,{nome:$('#a-nome').value.trim(),email,zap:digitos($('#a-zap').value),tes:$('#a-tes').checked}]);
+      toast('Acesso liberado. Já pode entrar com esse email.');
+    }
+  }catch(err){falhou(err);btn&&(btn.disabled=false)}
+});
+</script>
+</body></html>
