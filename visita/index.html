@@ -27,11 +27,11 @@ async function carregar(){
   const t=location.hash.slice(1);if(!t){erro('Link de visita incompleto.');return}
   let s;try{s=await getDoc(doc(db,'links',t))}catch{erro('Não deu para abrir a visita agora.');return}
   if(!s.exists()){erro('Esta visita não existe mais.');return}
-  const v=s.data(),f=v.familia||{},r=v.responsavel||{},eq=v.equipe||[];
+  const v=s.data(),f=v.familia||{},r=v.responsavel||{},eq=v.equipe||[],ent=v.tipo==='entrega';
   const motoristas=eq.filter(p=>p.transporte==='carro'),caronas=eq.filter(p=>p.transporte==='carona');
-  document.title=`Visita ${dia(v.data)} · Natal Social 2026`;
+  document.title=`${ent?'Entrega':'Visita'} ${dia(v.data)} · Natal Social 2026`;
   $('#app').innerHTML=`
-   <div class="hero"><small>Sua visita · Natal Social 2026</small><h1>Sábado, ${dia(v.data)}</h1><p>${esc(f.nome)}</p>
+   <div class="hero"><small>${ent?'Entrega de Natal':'Visita de reconhecimento'} · Natal Social 2026</small><h1>Sábado, ${dia(v.data)}</h1><p>${esc(f.nome)}</p>
     <div class="horarios"><div><b>${esc(v.saida)}</b><span>saída</span></div><div><b>${esc(v.retorno)}</b><span>retorno previsto</span></div><div><b>${eq.length+1}</b><span>pessoas</span></div></div></div>
    <div class="card bloco"><div class="sub" style="font-weight:700">Ponto de encontro</div><h3 style="margin-top:2px">${esc(v.encontro)}</h3>
     <a class="zap sec" href="${esc(v.encontroMapa||'https://maps.google.com/?q='+encodeURIComponent(v.encontro+' Brasília'))}" target="_blank" rel="noopener">Abrir o ponto de encontro no mapa</a></div>
@@ -46,7 +46,7 @@ async function carregar(){
     <div class="linha"><div class="min"><b>${esc(r.nome)||'Coordenação'}</b><div class="sub">responsável pela visita</div></div>${r.zap?`<a class="btn peq" href="${zap(r.zap,'Oi! Sobre a visita do Natal Social de '+dia(v.data)+'.')}" target="_blank" rel="noopener">WhatsApp</a>`:''}</div>
     ${eq.map(p=>`<div class="linha"><div class="min"><b>${esc(p.nome)}</b></div>${transp(p)}</div>`).join('')}
     ${motoristas.length&&caronas.length?`<p class="sub" style="margin:10px 0 0">Carona: ${caronas.map(p=>esc(primeiro(p.nome))).join(', ')} ${caronas.length>1?'vão':'vai'} com ${motoristas.map(p=>esc(primeiro(p.nome))).join(' ou ')}.</p>`:''}</div>
-   <div class="card bloco"><div class="sub" style="font-weight:700">Na conversa, anote</div><ul class="dicas"><li>Quem mora na casa e quantas pessoas são</li><li>Idade das crianças e o brinquedo que cada uma quer</li><li>O que mais precisam (cesta, presente, outro)</li><li>Confirme o endereço e o WhatsApp</li><li>Tire uma foto da fachada</li></ul></div>
+   ${ent?`<div class="card bloco"><div class="sub" style="font-weight:700">O que levar</div><ul class="dicas"><li>Cesta básica</li>${f.criancas?`<li>Presentes: ${esc(f.criancas)}</li>`:''}${f.pedidos?`<li>${esc(f.pedidos)}</li>`:''}</ul></div><div class="card bloco"><div class="sub" style="font-weight:700">Na entrega</div><ul class="dicas"><li>Confira o nome de cada presente antes de entregar</li><li>Tire uma foto com a família, se ela deixar</li><li>Avise o responsável pela visita quando terminar</li></ul></div>`:`<div class="card bloco"><div class="sub" style="font-weight:700">Na conversa, anote</div><ul class="dicas"><li>Quem mora na casa e quantas pessoas são</li><li>Idade das crianças e o brinquedo que cada uma quer</li><li>O que mais precisam (cesta, presente, outro)</li><li>Confirme o endereço e o WhatsApp</li><li>Tire uma foto da fachada</li></ul></div>`}
    <p class="sub" style="text-align:center;margin-top:18px">Natal Social 2026 · CEAC</p>`;
 }
 addEventListener('hashchange',carregar);carregar();

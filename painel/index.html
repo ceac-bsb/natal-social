@@ -30,6 +30,9 @@ const auth=getAuth(app),db=getFirestore(app);
 const ADMIN='tiagomelolemos@gmail.com';
 const SITE='https://ceac-bsb.github.io/natal-social/';
 const SABADOS=['2026-11-07','2026-11-14','2026-11-21','2026-11-28','2026-12-05'];
+const ENTREGA='2026-12-12';
+const TIPO={reconhecimento:'Reconhecimento',entrega:'Entrega de Natal'};
+const tipo=v=>v.tipo==='entrega'?'entrega':'reconhecimento';
 
 // ---------- estado ----------
 const S={user:null,admin:false,tes:false,acesso:{coordenadores:[],tesoureiros:[],equipe:[]},campanha:{familias:20,meta:20000,arrecadado:0,valorFamilia:1000},familias:[],visitas:[],voluntarios:[],doacoes:[]};
@@ -97,8 +100,8 @@ function conferirArrecadado(){
 // ---------- link da visita (o que o voluntário abre) ----------
 function linkDoc(v){
   const f=fam(v.familia)||{};
-  return {data:v.data,saida:v.saida||'',retorno:v.retorno||'',encontro:v.encontro||'',encontroMapa:v.encontroMapa||'',
-    familia:{nome:f.nome||'',resp:f.resp||'',zap:digitos(f.zap),end:f.end||'',mapa:f.mapa||'',pessoas:+f.pessoas||0,criancas:f.criancas||'',foto:f.foto||''},
+  return {tipo:tipo(v),data:v.data,saida:v.saida||'',retorno:v.retorno||'',encontro:v.encontro||'',encontroMapa:v.encontroMapa||'',
+    familia:{nome:f.nome||'',resp:f.resp||'',zap:digitos(f.zap),end:f.end||'',mapa:f.mapa||'',pessoas:+f.pessoas||0,criancas:f.criancas||'',pedidos:f.pedidos||'',foto:f.foto||''},
     responsavel:{nome:v.respNome||'',zap:digitos(v.respZap)},
     equipe:(v.equipe||[]).map(id=>{const p=vol(id)||{};return {nome:p.nome||'',transporte:p.transporte||'',vagas:+p.vagas||0}}),
     atualizado:serverTimestamp()};
@@ -106,11 +109,11 @@ function linkDoc(v){
 const urlVisita=v=>`${SITE}visita/#${v.token}`;
 function avisoTexto(v,p){
   const f=fam(v.familia)||{};
-  return `Oi, ${primeiro(p.nome)}! Subimos uma visita do Natal Social para você 🎄\n\nSábado, ${dia(v.data)}\nSaída: ${v.saida} · ${v.encontro}\nRetorno previsto: ${v.retorno}\nFamília: ${f.nome||''}\n\nEndereço, foto da casa, contato da família e quem vai junto:\n${urlVisita(v)}\n\nConfirma pra gente?`;
+  return `Oi, ${primeiro(p.nome)}! Subimos uma ${tipo(v)==='entrega'?'entrega de Natal':'visita de reconhecimento'} do Natal Social para você 🎄\n\nSábado, ${dia(v.data)}\nSaída: ${v.saida} · ${v.encontro}\nRetorno previsto: ${v.retorno}\nFamília: ${f.nome||''}\n\nEndereço, foto da casa, contato da família e quem vai junto:\n${urlVisita(v)}\n\nConfirma pra gente?`;
 }
 function textoGrupo(v){
   const f=fam(v.familia)||{},eq=(v.equipe||[]).map(vol).filter(Boolean);
-  return `🎄 Visita do Natal Social · sábado ${dia(v.data)}\nSaída: ${v.saida} · ${v.encontro}\nRetorno previsto: ${v.retorno}\nFamília: ${f.nome||''}\nResponsável: ${v.respNome||''}\nVão: ${eq.map(p=>p.nome).join(', ')||'—'}\n\nTudo da visita (mapa, foto da casa, contato):\n${urlVisita(v)}`;
+  return `🎄 ${TIPO[tipo(v)]} · Natal Social · sábado ${dia(v.data)}\nSaída: ${v.saida} · ${v.encontro}\nRetorno previsto: ${v.retorno}\nFamília: ${f.nome||''}\nResponsável: ${v.respNome||''}\nVão: ${eq.map(p=>p.nome).join(', ')||'—'}\n\nTudo da visita (mapa, foto da casa, contato):\n${urlVisita(v)}`;
 }
 
 // ---------- telas ----------
@@ -127,7 +130,7 @@ function render(){
     h+=`<h2>Resumo</h2><div class="kpis">
       <div class="card kpi"><small>Meta de arrecadação</small><b>${pct}%</b><em>${brl(arr)} de ${brl(meta)}</em><div class="barra"><i style="width:${pct}%"></i></div></div>
       <div class="card kpi"><small>Famílias garantidas</small><b>${garantidas} de ${S.campanha.familias}</b><em>${brl(S.campanha.valorFamilia)} por família</em></div>
-      <div class="card kpi"><small>Famílias cadastradas</small><b>${S.familias.length}</b><em>${S.familias.filter(f=>f.status&&f.status!=='visitar').length} já visitadas</em></div>
+      <div class="card kpi"><small>Famílias cadastradas</small><b>${S.familias.length}</b><em>${S.familias.filter(f=>f.status&&f.status!=='visitar').length} visitadas · ${S.familias.filter(f=>f.status==='entregue').length} entregues</em></div>
       <div class="card kpi"><small>Voluntários</small><b>${S.voluntarios.length}</b><em>${pend} aguardando aprovação</em></div></div>
      <h2>Próximas visitas</h2><div class="grade">${prox.map(cardVisita).join('')||'<p class="vazio">Nenhuma visita marcada. Crie em Visitas.</p>'}</div>
      <h2>Coordenação</h2><div class="card">${S.acesso.equipe.map(c=>`<div class="linha"><div class="min"><b>${esc(c.nome)}</b><div class="sub">${esc(c.email)}${c.tes?' · lança doações':''}</div></div><span class="sub">${fone(c.zap)}</span></div>`).join('')||'<p class="vazio">Ninguém cadastrado.</p>'}</div>`;
@@ -174,13 +177,15 @@ function cardVisita(v){
   const f=fam(v.familia)||{nome:'(família removida)'},eq=(v.equipe||[]).map(vol).filter(Boolean);
   const vagas=eq.filter(p=>p.transporte==='carro').reduce((a,p)=>a+(+p.vagas||0),0),caronas=eq.filter(p=>p.transporte==='carona').length;
   const passou=v.data<=hoje();
-  return `<div class="card"><div class="visita-cab"><div class="foto">${fachada(f)}</div><div class="min"><div class="sub">Sábado ${dia(v.data)} · ${esc(v.saida)} às ${esc(v.retorno)}</div><h3>${esc(f.nome)}</h3><div class="sub">${esc(f.end)}</div></div></div>
+  return `<div class="card"><div class="visita-cab"><div class="foto">${fachada(f)}</div><div class="min"><div class="sub">Sábado ${dia(v.data)} · ${esc(v.saida)} às ${esc(v.retorno)}</div><h3>${esc(f.nome)}</h3><span class="chip ${tipo(v)==='entrega'?'c-ok':'c-neutro'}" style="margin-top:4px">${TIPO[tipo(v)]}</span><div class="sub">${esc(f.end)}</div></div></div>
    <dl class="kv"><dt>Responsável</dt><dd>${esc(v.respNome)||'—'}</dd><dt>Encontro</dt><dd>${esc(v.encontro)}</dd><dt>Equipe</dt><dd>${eq.length+1} pessoas</dd><dt>Carona</dt><dd>${caronas} precisam · ${vagas} vagas${caronas>vagas?' <span class="chip c-pend">faltam vagas</span>':''}</dd></dl>
    <div class="pessoas">${eq.map(p=>`<span class="chip c-neutro">${esc(primeiro(p.nome))}</span>`).join('')}</div>
+   ${tipo(v)==='entrega'?`<div class="rel"><b>Levar</b><p>Cesta básica${f.criancas?` · ${esc(f.criancas)}`:''}${f.pedidos?`<br><span class="sub">Pedidos: ${esc(f.pedidos)}</span>`:''}</p></div>`:''}
    ${blocoRelatorio(v)}<div id="rel-${v.id}"></div><div id="ev-${v.id}"></div>
    <div class="acoes"><a class="btn peq" href="${urlVisita(v)}" target="_blank" rel="noopener">Ver link da visita</a><button class="btn peq" data-grupo="${v.id}">Copiar msg do grupo</button>${eq.map(p=>`<a class="btn peq" href="${zap(p.whatsapp,avisoTexto(v,p))}" target="_blank" rel="noopener">Avisar ${esc(primeiro(p.nome))}</a>`).join('')}${passou?`<button class="btn peq pri" data-relatorio="${v.id}">${v.relatorio?'Editar relatório':'Escrever relatório'}</button>`:''}<button class="btn peq" data-edit-vis="${v.id}">Editar</button></div></div>`;
 }
-const STATUS_REL={feita:['Visita feita','c-ok'],ausente:['Família não estava','c-pend'],remarcar:['Remarcar','c-pend']};
+const STATUS_REL={feita:['Visita feita','c-ok'],entregue:['Entregue','c-ok'],ausente:['Família não estava','c-pend'],remarcar:['Remarcar','c-pend']};
+const statusDo=v=>tipo(v)==='entrega'?['entregue','ausente','remarcar']:['feita','ausente','remarcar'];
 function blocoRelatorio(v){
   const r=v.relatorio;if(!r)return v.data<=hoje()?'<div class="rel"><span class="chip c-pend">sem relatório</span></div>':'';
   const [n,c]=STATUS_REL[r.status]||STATUS_REL.feita;
@@ -190,9 +195,10 @@ function blocoRelatorio(v){
 // ---------- formulários ----------
 const opcoesCoord=sel=>S.acesso.equipe.map((c,i)=>`<option value="${i}" ${sel===c.nome?'selected':''}>${esc(c.nome)}</option>`).join('');
 function formVisita(v={}){
-  const datas=[...new Set([...SABADOS,v.data].filter(Boolean))].sort();
+  const datas=[...new Set([...SABADOS,ENTREGA,v.data].filter(Boolean))].sort();
   return `<form class="card cad" id="f-visita" data-id="${v.id||''}" style="margin:12px 0">
-   <label class="f">Sábado<select id="v-data">${datas.map(s=>`<option value="${s}" ${v.data===s?'selected':''}>${dia(s)}</option>`).join('')}</select></label>
+   <label class="f">Tipo<select id="v-tipo"><option value="reconhecimento" ${tipo(v)==='reconhecimento'?'selected':''}>Reconhecimento (conhecer a família)</option><option value="entrega" ${tipo(v)==='entrega'?'selected':''}>Entrega de Natal (12/12)</option></select></label>
+   <label class="f">Sábado<select id="v-data">${datas.map(s=>`<option value="${s}" ${(v.data||(tipo(v)==='entrega'?ENTREGA:''))===s?'selected':''}>${dia(s)}${s===ENTREGA?' · entrega':''}</option>`).join('')}</select></label>
    <label class="f">Família<select id="v-fam" required>${S.familias.map(f=>`<option value="${f.id}" ${v.familia===f.id?'selected':''}>${esc(f.nome)}</option>`).join('')}</select></label>
    <label class="f">Responsável pela visita<select id="v-resp">${opcoesCoord(v.respNome)}</select></label>
    <label class="f">Ponto de encontro<input id="v-enc" value="${esc(v.encontro||'Estacionamento do CEAC')}"></label>
@@ -220,7 +226,7 @@ function formFamilia(f={}){
 function formRelatorio(v){
   const r=v.relatorio||{},f=fam(v.familia)||{};
   return `<form class="cad" id="f-rel" data-v="${v.id}" style="margin-top:12px;border-top:1px dashed var(--fio);padding-top:12px">
-   <label class="f full">Como foi a visita<select id="r-status">${Object.entries(STATUS_REL).map(([k,[n]])=>`<option value="${k}" ${r.status===k?'selected':''}>${n}</option>`).join('')}</select></label>
+   <label class="f full">Como foi a visita<select id="r-status">${statusDo(v).map(k=>[k,STATUS_REL[k]]).map(([k,[n]])=>`<option value="${k}" ${r.status===k?'selected':''}>${n}</option>`).join('')}</select></label>
    <label class="f full">Relato<textarea id="r-texto" placeholder="Como a família recebeu, quem mora lá, o que chamou atenção, referência para achar a casa">${esc(r.texto||'')}</textarea></label>
    <label class="f">Pessoas na casa<input id="r-pes" type="number" min="1" value="${r.pessoas||f.pessoas||''}"></label>
    <label class="f full">Crianças e brinquedos (atualizado)<textarea id="r-cri">${esc(r.criancas||f.criancas||'')}</textarea></label>
@@ -267,6 +273,7 @@ document.addEventListener('click',async e=>{
   if(t.dataset.delAcesso){const eq=S.acesso.equipe.filter((_,i)=>i!=t.dataset.delAcesso);return apagar(()=>salvarAcesso(eq),'Acesso retirado.')}
 });
 document.addEventListener('change',async e=>{
+  if(e.target.id==='v-tipo'){const d=$('#v-data');if(e.target.value==='entrega')d.value=ENTREGA;else if(d.value===ENTREGA)d.value=SABADOS.find(x=>x>=hoje())||SABADOS[0]}
   if(e.target.id==='ff-foto'&&e.target.files[0]){try{const d=await comprimir(e.target.files[0]);e.target.dataset.foto=d;$('#ff-prev').src=d;$('#ff-prev').hidden=false}catch{toast('Não deu para ler essa foto.')}}
   if(e.target.dataset.tes!==undefined){const eq=S.acesso.equipe.map((c,i)=>i==e.target.dataset.tes?{...c,tes:e.target.checked}:c);salvarAcesso(eq).then(()=>toast('Acesso atualizado.')).catch(falhou)}
 });
@@ -285,7 +292,7 @@ document.addEventListener('submit',async e=>{
     }
     if(f.id==='f-visita'){
       const c=S.acesso.equipe[+$('#v-resp').value]||{};
-      const v={data:$('#v-data').value,familia:$('#v-fam').value,respNome:c.nome||'',respZap:digitos(c.zap),encontro:$('#v-enc').value.trim(),encontroMapa:$('#v-encmapa').value.trim(),saida:$('#v-saida').value,retorno:$('#v-ret').value,equipe:[...f.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value)};
+      const v={tipo:$('#v-tipo').value,data:$('#v-data').value,familia:$('#v-fam').value,respNome:c.nome||'',respZap:digitos(c.zap),encontro:$('#v-enc').value.trim(),encontroMapa:$('#v-encmapa').value.trim(),saida:$('#v-saida').value,retorno:$('#v-ret').value,equipe:[...f.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value)};
       const old=S.visitas.find(x=>x.id===f.dataset.id);
       v.token=old?.token||token();
       await setDoc(doc(db,'links',v.token),linkDoc(v));
@@ -296,7 +303,7 @@ document.addEventListener('submit',async e=>{
       const v=S.visitas.find(x=>x.id===f.dataset.v),fa=fam(v.familia);
       const r={status:$('#r-status').value,texto:$('#r-texto').value.trim()||'—',pessoas:+$('#r-pes').value||0,criancas:$('#r-cri').value.trim(),pedidos:$('#r-ped').value.trim(),autor:S.user.displayName||S.user.email,data:hoje()};
       await updateDoc(doc(db,'visitas',v.id),{relatorio:r});
-      if(fa){const up={};if(r.pessoas)up.pessoas=r.pessoas;if(r.criancas)up.criancas=r.criancas;if(r.pedidos)up.pedidos=r.pedidos;if(r.status==='feita'&&fa.status!=='entregue')up.status='visitada';await updateDoc(doc(db,'familias',fa.id),up);Object.assign(fa,up);await syncLinks(x=>x.familia===fa.id)}
+      if(fa){const up={};if(r.pessoas)up.pessoas=r.pessoas;if(r.criancas)up.criancas=r.criancas;if(r.pedidos)up.pedidos=r.pedidos;if(r.status==='feita'&&fa.status!=='entregue')up.status='visitada';if(r.status==='entregue')up.status='entregue';await updateDoc(doc(db,'familias',fa.id),up);Object.assign(fa,up);await syncLinks(x=>x.familia===fa.id)}
       toast('Relatório salvo. A ficha da família foi atualizada.');fechar();
     }
     if(f.id==='f-vol'){
