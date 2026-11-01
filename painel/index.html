@@ -35,7 +35,7 @@ const TIPO={reconhecimento:'Reconhecimento',entrega:'Entrega de Natal'};
 const tipo=v=>v.tipo==='entrega'?'entrega':'reconhecimento';
 
 // ---------- estado ----------
-const S={user:null,admin:false,tes:false,acesso:{coordenadores:[],tesoureiros:[],equipe:[]},campanha:{familias:27,meta:30000,arrecadado:0,valorFamilia:1000},familias:[],visitas:[],voluntarios:[],doacoes:[]};
+const S={user:null,admin:false,tes:false,acesso:{coordenadores:[],tesoureiros:[],equipe:[]},campanha:{familias:27,meta:20000,arrecadado:0,valorFamilia:1000},familias:[],visitas:[],voluntarios:[],doacoes:[]};
 let aba='resumo',editando=false,unsub=[];
 
 // ---------- utilidades ----------
@@ -82,7 +82,7 @@ onAuthStateChanged(auth,async u=>{
       await setDoc(doc(db,'config','acesso'),{coordenadores:[ADMIN],tesoureiros:[ADMIN],equipe:[{nome:'Tiago Lemos',email:ADMIN,zap:'',tes:true}]});
     }
     const c=await getDoc(doc(db,'publico','campanha'));
-    if(!c.exists()&&S.admin)await setDoc(doc(db,'publico','campanha'),{familias:27,meta:30000,arrecadado:0,valorFamilia:1000});
+    if(!c.exists()&&S.admin)await setDoc(doc(db,'publico','campanha'),{familias:27,meta:20000,arrecadado:0,valorFamilia:1000});
   }catch(e){telaEntrar(`O email ${esc(email)} ainda não tem acesso. Peça para o Tiago liberar.`);return}
   ouvir();
 });
