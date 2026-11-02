@@ -22,7 +22,7 @@
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import {getFirestore,collection,doc,onSnapshot,addDoc,setDoc,updateDoc,deleteDoc,getDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const app=initializeApp({apiKey:"AIzaSyAfWGepsAcPbwQMVYLZyYtTH4BWglPfCmM",authDomain:"natal-social-ceac.firebaseapp.com",projectId:"natal-social-ceac",storageBucket:"natal-social-ceac.firebasestorage.app",messagingSenderId:"1014280497543",appId:"1:1014280497543:web:0a637ed96aa2a4ab1ecb22"});
@@ -68,7 +68,7 @@ function telaEntrar(msg){
 }
 async function entrar(){
   const p=new GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
-  try{await signInWithPopup(auth,p)}catch(e){if(e?.code==='auth/popup-blocked'||e?.code==='auth/operation-not-supported-in-this-environment')signInWithRedirect(auth,p);else if(e?.code!=='auth/popup-closed-by-user'&&e?.code!=='auth/cancelled-popup-request')toast('Não deu para entrar. Tente de novo.')}
+  try{await signInWithPopup(auth,p)}catch(e){if(e?.code==='auth/popup-blocked')toast('O navegador bloqueou a janela do Google. Toque em Entrar de novo ou abra o link no Safari/Chrome.');else if(e?.code!=='auth/popup-closed-by-user'&&e?.code!=='auth/cancelled-popup-request')toast('Não deu para entrar por este navegador. Abra o link no Safari (iPhone) ou no Chrome (Android).')}
 }
 onAuthStateChanged(auth,async u=>{
   unsub.forEach(f=>f());unsub=[];S.user=u;
