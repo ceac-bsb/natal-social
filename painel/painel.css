@@ -104,3 +104,10 @@ label.f textarea{min-height:70px;resize:vertical}
 .perigo{color:var(--alerta)!important;border-color:var(--alerta)!important}
 .so-leitura{font-size:13px;color:var(--suave);margin-top:4px}
 .linha-form{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+
+/* crianças: uma linha por criança */
+.kids{display:grid;gap:8px}
+.kid{display:grid;grid-template-columns:minmax(0,1.4fr) 76px 110px minmax(0,1.8fr) 36px;gap:6px;align-items:center}
+.kid input,.kid select{font:600 15px var(--fonte);color:var(--tinta);background:var(--papel);border:1.5px solid var(--fio);border-radius:10px;padding:10px;width:100%;min-width:0}
+.kid-x{width:36px;height:40px;border:0;background:none;color:var(--alerta);font-size:22px;font-weight:700;cursor:pointer;border-radius:10px}
+@media (max-width:640px){.kid{grid-template-columns:minmax(0,1fr) 72px 36px;padding:10px;border:1.5px dashed var(--fio);border-radius:12px}.kid .k-nome{grid-column:1;grid-row:1}.kid .k-idade{grid-column:2;grid-row:1}.kid .k-sexo{grid-column:1;grid-row:2}.kid .k-brinq{grid-column:2/4;grid-row:2}.kid .kid-x{grid-column:3;grid-row:1}}
