@@ -63,6 +63,16 @@ const kidLinha=(k={})=>`<div class="kid"><input class="k-nome" placeholder="Nome
 const kidsEditor=(id,ks,antigo)=>`<div class="full"><div class="sub" style="font-weight:700;margin-bottom:6px">Crianças</div>${antigo&&!ks.length?`<p class="sub" style="margin:0 0 8px">Anotado antes: ${esc(antigo)}</p>`:''}<div class="kids" id="${id}">${(ks.length?ks:[{}]).map(kidLinha).join('')}</div><button type="button" class="btn peq" data-add-kid="${id}" style="margin-top:8px">+ Adicionar mais uma criança</button></div>`;
 const lerKids=id=>[...document.querySelectorAll(`#${id} .kid`)].map(r=>({nome:r.querySelector('.k-nome').value.trim(),idade:r.querySelector('.k-idade').value===''?null:+r.querySelector('.k-idade').value,sexo:r.querySelector('.k-sexo').value,brinquedo:r.querySelector('.k-brinq').value.trim()})).filter(k=>k.nome||k.idade!==null||k.brinquedo);
 const kidsHtml=f=>{const ks=kidsDe(f);return ks.length?ks.map(k=>esc(kidTxt(k))).join('<br>'):esc(f.criancas)||'—'};
+// mensagem para a família (o mesmo texto vai no link do voluntário)
+const hora=t=>t?String(t).replace(/^0?(\d+):00$/,'$1h').replace(/^0?(\d+):(\d\d)$/,'$1h$2'):'';
+const quando=d=>{const n=(new Date(d+'T12:00')-new Date(hoje()+'T12:00'))/864e5;return n>=0&&n<7?`neste sábado (${dia(d)})`:`no sábado, ${dia(d)}`};
+function msgFamilia(f,v){
+  let t=`Oi, ${primeiro(f.resp)||f.nome||''}! Aqui é do Natal Social do CEAC.`;
+  if(f.indicacao)t+=`\n${f.indicacao} passou seu contato.`;
+  if(v){const h=hora(v.chegada||'10:00');t+=v.tipo==='entrega'?` Podemos levar a cesta e os presentes de Natal à sua casa ${quando(v.data)}, a partir das ${h}?`:` Podemos realizar uma visita à sua casa ${quando(v.data)}, a partir das ${h}?`}
+  return t;
+}
+const proxVisita=f=>S.visitas.filter(v=>v.familia===f.id&&v.data>=hoje()).sort((a,b)=>a.data.localeCompare(b.data))[0];
 const fachada=f=>f?.foto?`<img src="${f.foto}" alt="Fachada da casa da ${esc(f.nome)}">`:casaSvg;
 
 // ---------- login ----------
@@ -109,8 +119,8 @@ function conferirArrecadado(){
 // ---------- link da visita (o que o voluntário abre) ----------
 function linkDoc(v){
   const f=fam(v.familia)||{};
-  return {tipo:tipo(v),data:v.data,saida:v.saida||'',retorno:v.retorno||'',encontro:v.encontro||'',encontroMapa:v.encontroMapa||'',
-    familia:{nome:f.nome||'',resp:f.resp||'',zap:digitos(f.zap),end:f.end||'',mapa:f.mapa||'',pessoas:+f.pessoas||0,criancas:f.criancas||'',kids:kidsDe(f),pedidos:f.pedidos||'',foto:f.foto||''},
+  return {tipo:tipo(v),data:v.data,saida:v.saida||'',chegada:v.chegada||'10:00',retorno:v.retorno||'',encontro:v.encontro||'',encontroMapa:v.encontroMapa||'',
+    familia:{nome:f.nome||'',resp:f.resp||'',indicacao:f.indicacao||'',zap:digitos(f.zap),end:f.end||'',mapa:f.mapa||'',pessoas:+f.pessoas||0,criancas:f.criancas||'',kids:kidsDe(f),pedidos:f.pedidos||'',foto:f.foto||''},
     responsavel:{nome:v.respNome||'',zap:digitos(v.respZap)},
     equipe:(v.equipe||[]).map(id=>{const p=vol(id)||{};return {nome:p.nome||'',transporte:p.transporte||'',vagas:+p.vagas||0}}),
     atualizado:serverTimestamp()};
@@ -180,7 +190,7 @@ function cardFamilia(f){
   const st=f.status==='visitada'?'<span class="chip c-ok">visitada</span>':f.status==='entregue'?'<span class="chip c-ok">entregue</span>':'<span class="chip c-pend">a visitar</span>';
   return `<div class="card"><div class="visita-cab"><div class="foto">${fachada(f)}</div><div class="min"><h3>${esc(f.nome)}</h3><div class="sub">${esc(f.end)}</div><div style="margin-top:6px">${st}</div></div></div>
    <dl class="kv"><dt>Responsável</dt><dd>${esc(f.resp)} · ${fone(f.zap)}</dd><dt>Na casa</dt><dd>${+f.pessoas||'?'} pessoas</dd><dt>Crianças${kidsDe(f).length?` (${kidsDe(f).length})`:''}</dt><dd>${kidsHtml(f)}</dd><dt>Pedidos</dt><dd>${esc(f.pedidos)||'—'}</dd>${ult?`<dt>Última visita</dt><dd>${dia(ult.data)} · ${esc(String(ult.relatorio.texto||'').slice(0,90))}</dd>`:''}</dl>
-   <div class="acoes">${f.mapa?`<a class="btn peq" href="${esc(f.mapa)}" target="_blank" rel="noopener">Abrir no mapa</a>`:''}${f.zap?`<a class="btn peq" href="${zap(f.zap,'Oi, '+primeiro(f.resp)+'! Aqui é do Natal Social do CEAC.')}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button class="btn peq" data-edit-fam="${f.id}">Editar</button></div><div id="ef-${f.id}"></div></div>`;
+   <div class="acoes">${f.mapa?`<a class="btn peq" href="${esc(f.mapa)}" target="_blank" rel="noopener">Abrir no mapa</a>`:''}${f.zap?`<a class="btn peq" href="${zap(f.zap,msgFamilia(f,proxVisita(f)))}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button class="btn peq" data-edit-fam="${f.id}">Editar</button></div><div id="ef-${f.id}"></div></div>`;
 }
 function cardVisita(v){
   const f=fam(v.familia)||{nome:'(família removida)'},eq=(v.equipe||[]).map(vol).filter(Boolean);
@@ -212,6 +222,7 @@ function formVisita(v={}){
    <label class="f">Responsável pela visita<select id="v-resp">${opcoesCoord(v.respNome)}</select></label>
    <label class="f">Ponto de encontro<input id="v-enc" value="${esc(v.encontro||'Estacionamento do CEAC')}"></label>
    <label class="f">Saída<input id="v-saida" type="time" value="${v.saida||'09:00'}"></label>
+   <label class="f">Chegada na casa (vai na mensagem pra família)<input id="v-cheg" type="time" value="${v.chegada||'10:00'}"></label>
    <label class="f">Retorno previsto<input id="v-ret" type="time" value="${v.retorno||'12:00'}"></label>
    <label class="f full">Link do mapa do ponto de encontro (opcional)<input id="v-encmapa" value="${esc(v.encontroMapa||'')}" placeholder="cole o link do Google Maps"></label>
    <fieldset class="full" style="border:0;padding:0;margin:0"><legend class="sub" style="font-weight:700;margin-bottom:6px">Quem vai (voluntários aprovados)</legend><div class="pessoas">${S.voluntarios.filter(p=>p.aprovado).map(p=>`<label class="chip c-neutro" style="cursor:pointer"><input type="checkbox" value="${p.id}" ${(v.equipe||[]).includes(p.id)?'checked':''} style="accent-color:var(--verde)"> ${esc(p.nome)}${p.transporte?' · '+({carro:'carro',carona:'carona',proprio:'por conta'}[p.transporte]):''}</label>`).join('')||'<span class="sub">Nenhum voluntário aprovado ainda.</span>'}</div></fieldset>
@@ -224,6 +235,7 @@ function formFamilia(f={}){
    <label class="f">WhatsApp do responsável<input id="ff-zap" inputmode="tel" value="${esc(f.zap||'')}" placeholder="61 9 0000-0000"></label>
    <label class="f">Pessoas na casa<input id="ff-pes" type="number" min="1" value="${f.pessoas||''}"></label>
    ${kidsEditor('ff-kids',kidsDe(f),f.criancas)}
+   <label class="f full">Quem passou o contato (opcional)<input id="ff-ind" value="${esc(f.indicacao||'')}" placeholder="ex.: A Conceição"></label>
    <label class="f full">Endereço<input id="ff-end" value="${esc(f.end||'')}" placeholder="Quadra, conjunto, casa · setor"></label>
    <label class="f full">Localização (link do mapa)<span class="linha-form"><input id="ff-mapa" value="${esc(f.mapa||'')}" placeholder="cole o link do Google Maps" style="flex:1;min-width:0"><button class="btn peq" type="button" id="ff-gps">📍 Estou na casa</button></span></label>
    <label class="f full">Pedidos<textarea id="ff-ped" placeholder="cesta básica, presentes, necessidades">${esc(f.pedidos||'')}</textarea></label>
@@ -295,7 +307,7 @@ document.addEventListener('submit',async e=>{
   e.preventDefault();const f=e.target,btn=f.querySelector('[type=submit]');btn&&(btn.disabled=true);
   try{
     if(f.id==='f-familia'){
-      const d={nome:$('#ff-nome').value.trim()||'Família sem nome',resp:$('#ff-resp').value.trim(),zap:digitos($('#ff-zap').value),pessoas:+$('#ff-pes').value||0,kids:lerKids('ff-kids'),end:$('#ff-end').value.trim(),mapa:$('#ff-mapa').value.trim(),pedidos:$('#ff-ped').value.trim(),status:$('#ff-st').value};
+      const d={nome:$('#ff-nome').value.trim()||'Família sem nome',resp:$('#ff-resp').value.trim(),zap:digitos($('#ff-zap').value),pessoas:+$('#ff-pes').value||0,kids:lerKids('ff-kids'),end:$('#ff-end').value.trim(),indicacao:$('#ff-ind').value.trim(),mapa:$('#ff-mapa').value.trim(),pedidos:$('#ff-ped').value.trim(),status:$('#ff-st').value};
       d.criancas=resumoKids(d.kids)||(f.dataset.id?fam(f.dataset.id)?.criancas||'':'');
       if($('#ff-foto').dataset.foto)d.foto=$('#ff-foto').dataset.foto;
       if(f.dataset.id){await updateDoc(doc(db,'familias',f.dataset.id),d);Object.assign(fam(f.dataset.id),d);await syncLinks(v=>v.familia===f.dataset.id)}
@@ -304,7 +316,7 @@ document.addEventListener('submit',async e=>{
     }
     if(f.id==='f-visita'){
       const c=S.acesso.equipe[+$('#v-resp').value]||{};
-      const v={tipo:$('#v-tipo').value,data:$('#v-data').value,familia:$('#v-fam').value,respNome:c.nome||'',respZap:digitos(c.zap),encontro:$('#v-enc').value.trim(),encontroMapa:$('#v-encmapa').value.trim(),saida:$('#v-saida').value,retorno:$('#v-ret').value,equipe:[...f.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value)};
+      const v={tipo:$('#v-tipo').value,data:$('#v-data').value,familia:$('#v-fam').value,respNome:c.nome||'',respZap:digitos(c.zap),encontro:$('#v-enc').value.trim(),encontroMapa:$('#v-encmapa').value.trim(),saida:$('#v-saida').value,chegada:$('#v-cheg').value,retorno:$('#v-ret').value,equipe:[...f.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value)};
       const old=S.visitas.find(x=>x.id===f.dataset.id);
       v.token=old?.token||token();
       await setDoc(doc(db,'links',v.token),linkDoc(v));

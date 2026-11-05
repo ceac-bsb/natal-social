@@ -19,6 +19,10 @@ const dia=s=>s?s.slice(8,10)+'/'+s.slice(5,7):'';
 const fone=z=>z&&z.length>=10?`(${z.slice(0,2)}) ${z.slice(2,-4)}-${z.slice(-4)}`:(z||'');
 const zap=(z,t)=>`https://wa.me/55${z}?text=${encodeURIComponent(t)}`;
 const primeiro=n=>String(n||'').trim().split(' ')[0];
+const hoje=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const hora=t=>t?String(t).replace(/^0?(\d+):00$/,'$1h').replace(/^0?(\d+):(\d\d)$/,'$1h$2'):'';
+const quando=d=>{const n=(new Date(d+'T12:00')-new Date(hoje()+'T12:00'))/864e5;return n>=0&&n<7?`neste sábado (${dia(d)})`:`no sábado, ${dia(d)}`};
+const msgFamilia=(f,v)=>`Oi, ${primeiro(f.resp)||f.nome||''}! Aqui é do Natal Social do CEAC.${f.indicacao?`\n${f.indicacao} passou seu contato.`:''}`+(v.tipo==='entrega'?` Podemos levar a cesta e os presentes de Natal à sua casa ${quando(v.data)}, a partir das ${hora(v.chegada||'10:00')}?`:` Podemos realizar uma visita à sua casa ${quando(v.data)}, a partir das ${hora(v.chegada||'10:00')}?`);
 const kidTxt=k=>`${k.nome||(k.sexo==='menina'?'Menina':k.sexo==='menino'?'Menino':'Criança')}${k.idade?`, ${k.idade} anos`:''}${k.brinquedo?`: ${k.brinquedo}`:''}`;
 const transp=p=>p.transporte==='carro'?`<span class="chip c-carro">🚗 carro${p.vagas?` · ${p.vagas} vagas`:''}</span>`:p.transporte==='carona'?`<span class="chip c-carona">precisa de carona</span>`:p.transporte==='proprio'?`<span class="chip c-neutro">vai por conta</span>`:'';
 const casa=`<svg viewBox="0 0 160 120" aria-label="Sem foto da fachada"><rect width="160" height="120" fill="var(--verde-claro)"/><path d="M40 92V58l40-28 40 28v34" fill="none" stroke="var(--verde)" stroke-width="5" stroke-linejoin="round"/><rect x="68" y="66" width="24" height="26" fill="none" stroke="var(--verde)" stroke-width="4"/></svg>`;
@@ -43,7 +47,7 @@ async function carregar(){
    <div class="card bloco"><div class="sub" style="font-weight:700">Quem vai receber vocês</div><h3 style="margin-top:2px">${esc(f.resp)||'—'}</h3>
     <div class="sub">${[fone(f.zap),f.pessoas?f.pessoas+' pessoas na casa':'',ks.length?'':esc(f.criancas)].filter(Boolean).join(' · ')}</div>
     ${ks.length?`<ul class="dicas">${ks.map(k=>`<li>${esc(kidTxt(k))}</li>`).join('')}</ul>`:''}
-    ${f.zap?`<a class="zap" href="${zap(f.zap,`Oi, ${primeiro(f.resp)}! Aqui é do Natal Social do CEAC. Estamos indo te visitar no sábado, ${dia(v.data)}, por volta das ${v.saida}. Tudo certo?`)}" target="_blank" rel="noopener">Mandar mensagem para ${esc(primeiro(f.resp))}</a>`:''}</div>
+    ${f.zap?`<a class="zap" href="${zap(f.zap,msgFamilia(f,v))}" target="_blank" rel="noopener">Mandar mensagem para ${esc(primeiro(f.resp))}</a>`:''}</div>
    <div class="card bloco"><div class="sub" style="font-weight:700">Equipe</div>
     <div class="linha"><div class="min"><b>${esc(r.nome)||'Coordenação'}</b><div class="sub">responsável pela visita</div></div>${r.zap?`<a class="btn peq" href="${zap(r.zap,'Oi! Sobre a visita do Natal Social de '+dia(v.data)+'.')}" target="_blank" rel="noopener">WhatsApp</a>`:''}</div>
     ${eq.map(p=>`<div class="linha"><div class="min"><b>${esc(p.nome)}</b></div>${transp(p)}</div>`).join('')}
