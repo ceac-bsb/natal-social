@@ -189,7 +189,7 @@ function cardFamilia(f){
   const ult=S.visitas.filter(v=>v.familia===f.id&&v.relatorio).sort((a,b)=>b.data.localeCompare(a.data))[0];
   const st=f.status==='visitada'?'<span class="chip c-ok">visitada</span>':f.status==='entregue'?'<span class="chip c-ok">entregue</span>':'<span class="chip c-pend">a visitar</span>';
   return `<div class="card"><div class="visita-cab"><div class="foto">${fachada(f)}</div><div class="min"><h3>${esc(f.nome)}</h3><div class="sub">${esc(f.end)}</div><div style="margin-top:6px">${st}</div></div></div>
-   <dl class="kv"><dt>Responsável</dt><dd>${esc(f.resp)} · ${fone(f.zap)}</dd><dt>Na casa</dt><dd>${+f.pessoas||'?'} pessoas</dd><dt>Crianças${kidsDe(f).length?` (${kidsDe(f).length})`:''}</dt><dd>${kidsHtml(f)}</dd><dt>Pedidos</dt><dd>${esc(f.pedidos)||'—'}</dd>${ult?`<dt>Última visita</dt><dd>${dia(ult.data)} · ${esc(String(ult.relatorio.texto||'').slice(0,90))}</dd>`:''}</dl>
+   <dl class="kv"><dt>Responsável</dt><dd>${esc(f.resp)} · ${fone(f.zap)}</dd>${f.obs?`<dt>Observação</dt><dd>${esc(f.obs)}</dd>`:''}<dt>Na casa</dt><dd>${+f.pessoas||'?'} pessoas</dd><dt>Crianças${kidsDe(f).length?` (${kidsDe(f).length})`:''}</dt><dd>${kidsHtml(f)}</dd><dt>Pedidos</dt><dd>${esc(f.pedidos)||'—'}</dd>${ult?`<dt>Última visita</dt><dd>${dia(ult.data)} · ${esc(String(ult.relatorio.texto||'').slice(0,90))}</dd>`:''}</dl>
    <div class="acoes">${f.mapa?`<a class="btn peq" href="${esc(f.mapa)}" target="_blank" rel="noopener">Abrir no mapa</a>`:''}${f.zap?`<a class="btn peq" href="${zap(f.zap,msgFamilia(f,proxVisita(f)))}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button class="btn peq" data-edit-fam="${f.id}">Editar</button></div><div id="ef-${f.id}"></div></div>`;
 }
 function cardVisita(v){
@@ -239,6 +239,7 @@ function formFamilia(f={}){
    <label class="f full">Endereço<input id="ff-end" value="${esc(f.end||'')}" placeholder="Quadra, conjunto, casa · setor"></label>
    <label class="f full">Localização (link do mapa)<span class="linha-form"><input id="ff-mapa" value="${esc(f.mapa||'')}" placeholder="cole o link do Google Maps" style="flex:1;min-width:0"><button class="btn peq" type="button" id="ff-gps">📍 Estou na casa</button></span></label>
    <label class="f full">Pedidos<textarea id="ff-ped" placeholder="cesta básica, presentes, necessidades">${esc(f.pedidos||'')}</textarea></label>
+   <label class="f full">Observação (só a coordenação vê)<textarea id="ff-obs" placeholder="ex.: não consegui o WhatsApp; pedir para a Conceição">${esc(f.obs||'')}</textarea></label>
    <label class="f">Situação<select id="ff-st">${[['visitar','a visitar'],['visitada','visitada'],['entregue','entregue']].map(([k,n])=>`<option value="${k}" ${(f.status||'visitar')===k?'selected':''}>${n}</option>`).join('')}</select></label>
    <label class="f">Foto da fachada<input id="ff-foto" type="file" accept="image/*"></label>
    <img class="foto-prev" id="ff-prev" ${f.foto?`src="${f.foto}"`:'hidden'} alt="">
@@ -307,7 +308,7 @@ document.addEventListener('submit',async e=>{
   e.preventDefault();const f=e.target,btn=f.querySelector('[type=submit]');btn&&(btn.disabled=true);
   try{
     if(f.id==='f-familia'){
-      const d={nome:$('#ff-nome').value.trim()||'Família sem nome',resp:$('#ff-resp').value.trim(),zap:digitos($('#ff-zap').value),pessoas:+$('#ff-pes').value||0,kids:lerKids('ff-kids'),end:$('#ff-end').value.trim(),indicacao:$('#ff-ind').value.trim(),mapa:$('#ff-mapa').value.trim(),pedidos:$('#ff-ped').value.trim(),status:$('#ff-st').value};
+      const d={nome:$('#ff-nome').value.trim()||'Família sem nome',resp:$('#ff-resp').value.trim(),zap:digitos($('#ff-zap').value),pessoas:+$('#ff-pes').value||0,kids:lerKids('ff-kids'),end:$('#ff-end').value.trim(),indicacao:$('#ff-ind').value.trim(),obs:$('#ff-obs').value.trim(),mapa:$('#ff-mapa').value.trim(),pedidos:$('#ff-ped').value.trim(),status:$('#ff-st').value};
       d.criancas=resumoKids(d.kids)||(f.dataset.id?fam(f.dataset.id)?.criancas||'':'');
       if($('#ff-foto').dataset.foto)d.foto=$('#ff-foto').dataset.foto;
       if(f.dataset.id){await updateDoc(doc(db,'familias',f.dataset.id),d);Object.assign(fam(f.dataset.id),d);await syncLinks(v=>v.familia===f.dataset.id)}
