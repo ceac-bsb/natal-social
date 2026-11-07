@@ -126,7 +126,8 @@ function ouvir(){
   const sub=(ref,fn)=>unsub.push(onSnapshot(ref,fn,e=>console.error(e)));
   sub(doc(db,'config','acesso'),s=>{S.acesso=Object.assign({coordenadores:[],tesoureiros:[],equipe:[]},s.data());const em=(S.user.email||'').toLowerCase();S.tes=S.admin||S.acesso.tesoureiros.includes(em);render()});
   sub(doc(db,'publico','campanha'),s=>{if(s.exists())S.campanha=s.data();render()});
-  for(const k of ['familias','visitas','voluntarios','doacoes'])sub(collection(db,k),s=>{S[k]=s.docs.map(d=>({id:d.id,...d.data()}));if(k==='doacoes')conferirArrecadado();render()});
+  // visita arquivada (registro antigo, já juntado num grupo) fica guardada, fora da tela
+  for(const k of ['familias','visitas','voluntarios','doacoes'])sub(collection(db,k),s=>{S[k]=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!x.arquivada);if(k==='doacoes')conferirArrecadado();render()});
 }
 function conferirArrecadado(){
   if(!S.tes)return;const soma=S.doacoes.reduce((a,d)=>a+(d.tipo==='entrada'?+d.valor||0:0),0);
