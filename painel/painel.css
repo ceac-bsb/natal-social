@@ -111,3 +111,8 @@ label.f textarea{min-height:70px;resize:vertical}
 .kid input,.kid select{font:600 15px var(--fonte);color:var(--tinta);background:var(--papel);border:1.5px solid var(--fio);border-radius:10px;padding:10px;width:100%;min-width:0}
 .kid-x{width:36px;height:40px;border:0;background:none;color:var(--alerta);font-size:22px;font-weight:700;cursor:pointer;border-radius:10px}
 @media (max-width:640px){.kid{grid-template-columns:minmax(0,1fr) 72px 36px;padding:10px;border:1.5px dashed var(--fio);border-radius:12px}.kid .k-nome{grid-column:1;grid-row:1}.kid .k-idade{grid-column:2;grid-row:1}.kid .k-sexo{grid-column:1;grid-row:2}.kid .k-brinq{grid-column:2/4;grid-row:2}.kid .kid-x{grid-column:3;grid-row:1}}
+.fam-dia{flex-wrap:wrap}
+.dia-ctl{display:flex;gap:6px;flex:0 1 230px;min-width:0}
+.dia-ctl input,.dia-ctl select{font:600 14px var(--fonte);color:var(--tinta);background:var(--papel);border:1.5px solid var(--fio);border-radius:10px;padding:8px;min-width:0}
+.dia-ctl input{flex:0 0 96px}.dia-ctl select{flex:1}
+@media (max-width:640px){.dia-ctl{flex-basis:100%}}
