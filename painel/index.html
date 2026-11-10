@@ -36,7 +36,7 @@ const tipo=v=>v.tipo==='entrega'?'entrega':'reconhecimento';
 
 // ---------- estado ----------
 const S={user:null,admin:false,tes:false,acesso:{coordenadores:[],tesoureiros:[],equipe:[]},campanha:{familias:27,meta:20000,arrecadado:0,valorFamilia:1000},familias:[],visitas:[],voluntarios:[],doacoes:[]};
-let aba='resumo',editando=false,unsub=[];
+let aba='resumo',editando=false,unsub=[],filtroVol='';
 
 // ---------- utilidades ----------
 const $=s=>document.querySelector(s);
@@ -187,10 +187,15 @@ function render(){
      <div class="grade">${[...S.familias].sort((a,b)=>(a.nome||'').localeCompare(b.nome||'')).map(cardFamilia).join('')||'<p class="vazio">Nenhuma família cadastrada ainda.</p>'}</div>`;
   }
   if(aba==='voluntarios'){
-    const vs=[...S.voluntarios].sort((a,b)=>(a.aprovado-b.aprovado)||(a.nome||'').localeCompare(b.nome||''));
+    const marcou=(p,d)=>(p.sabados||[]).includes(d),datasVol=[...SABADOS,ENTREGA].filter(d=>d>=hoje()||d===filtroVol||S.voluntarios.some(p=>marcou(p,d)));
+    if(filtroVol&&!datasVol.includes(filtroVol))filtroVol='';
+    const vs=[...S.voluntarios].filter(p=>!filtroVol||marcou(p,filtroVol)).sort((a,b)=>(a.aprovado-b.aprovado)||(a.nome||'').localeCompare(b.nome||''));
+    const fbtn=(d,n,c)=>`<button type="button" class="chip ${filtroVol===d?'c-ok':'c-neutro'}" data-filtro-vol="${d}" aria-pressed="${filtroVol===d}" style="border:0;cursor:pointer;font:inherit;font-size:12px;font-weight:700;padding:6px 11px${filtroVol===d?';outline:2px solid var(--verde)':''}">${n} · ${c}</button>`;
     h+=`<h2>Voluntários <button class="btn" data-acao="novo-vol">+ Cadastrar</button></h2><p class="sub" style="margin-top:-6px">Quem se cadastra pela página do QR aparece aqui. Aprove para poder colocar num grupo de visita.</p><div id="form-vol"></div>
-     <div class="card">${vs.map(p=>`<div class="linha"><div class="min"><b>${esc(p.nome)}</b><div class="sub">${fone(p.whatsapp)}${p.email?' · '+esc(p.email):''}</div><div class="pessoas">${(p.sabados||[]).map(s=>`<span class="chip c-neutro">${dia(s)}</span>`).join('')}${transp(p)}</div></div>
-      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">${p.aprovado?'<span class="chip c-ok">aprovado</span>':`<button class="btn peq pri" data-aprovar="${p.id}">Aprovar</button>`}<a class="mini-link" href="${zap(p.whatsapp,'Oi, '+primeiro(p.nome)+'! Aqui é da coordenação do Natal Social do CEAC.')}" target="_blank" rel="noopener">WhatsApp</a><button class="mini-link" data-sab-vol="${p.id}">Sábados</button><button class="mini-link perigo" data-del-vol="${p.id}">Remover</button></div></div><div id="sv-${p.id}"></div>`).join('')||'<p class="vazio">Ninguém se cadastrou ainda.</p>'}</div>`;
+     <div class="pessoas" role="group" aria-label="Filtrar por sábado" style="margin:0 0 12px">${fbtn('','Todos',S.voluntarios.length)}${datasVol.map(d=>fbtn(d,dia(d)+(d===ENTREGA?' entrega':''),S.voluntarios.filter(p=>marcou(p,d)).length)).join('')}</div>
+     ${filtroVol?`<p class="sub" style="margin:-4px 0 10px">${vs.length} ${vs.length===1?'voluntário marcou':'voluntários marcaram'} ${dia(filtroVol)} (${(n=>n+(n===1?' aprovado':' aprovados'))(vs.filter(p=>p.aprovado).length)}, ${vs.filter(p=>p.transporte==='carro').reduce((n,p)=>n+(+p.vagas||0),0)} vagas de carro).</p>`:''}
+     <div class="card">${vs.map(p=>`<div class="linha"><div class="min"><b>${esc(p.nome)}</b><div class="sub">${fone(p.whatsapp)}${p.email?' · '+esc(p.email):''}</div><div class="pessoas">${(p.sabados||[]).map(s=>`<span class="chip ${s===filtroVol?'c-ok':'c-neutro'}">${dia(s)}</span>`).join('')}${transp(p)}</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">${p.aprovado?'<span class="chip c-ok">aprovado</span>':`<button class="btn peq pri" data-aprovar="${p.id}">Aprovar</button>`}<a class="mini-link" href="${zap(p.whatsapp,'Oi, '+primeiro(p.nome)+'! Aqui é da coordenação do Natal Social do CEAC.')}" target="_blank" rel="noopener">WhatsApp</a><button class="mini-link" data-sab-vol="${p.id}">Sábados</button><button class="mini-link perigo" data-del-vol="${p.id}">Remover</button></div></div><div id="sv-${p.id}"></div>`).join('')||`<p class="vazio">${filtroVol?'Ninguém marcou este sábado.':'Ninguém se cadastrou ainda.'}</p>`}</div>`;
   }
   if(aba==='doacoes'){
     const gasto=S.doacoes.reduce((a,d)=>a+(d.tipo==='saida'?+d.valor||0:0),0);
@@ -331,6 +336,7 @@ async function syncLinks(filtro){
 document.addEventListener('click',async e=>{
   const t=e.target.closest('button');if(!t)return;
   if(t.dataset.aba){aba=t.dataset.aba;editando=false;render();return}
+  if(t.dataset.filtroVol!==undefined){filtroVol=t.dataset.filtroVol;render();return}
   if(t.dataset.acao==='fechar'){fechar();return}
   if(t.dataset.novoGrupo){abrir('#ng-'+t.dataset.novoGrupo,formGrupo(t.dataset.novoGrupo));return}
   if(t.dataset.acao==='nova-familia'){abrir('#form-familia',formFamilia());return}
