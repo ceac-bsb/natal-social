@@ -228,7 +228,7 @@ function cardFamilia(f){
 function blocoDia(d){
   const fs=famsDia(d),gs=gruposDo(d),passou=d<hoje(),livres=S.familias.filter(f=>f.status!=='entregue'&&!agendaDe(f)&&!fs.includes(f)).sort((a,b)=>(a.nome||'').localeCompare(b.nome||'','pt',{numeric:true}));
   return `<section><h3 style="margin:24px 0 10px">Sábado ${dia(d)}${d===ENTREGA?' · entrega':''}${fs.length?` <span class="sub">· ${fs.length} ${fs.length>1?'famílias':'família'}</span>`:''}</h3>
-   <div class="card"><b>Famílias do dia</b>${fs.map(f=>{const a=f.agenda?.data===d?f.agenda:null,g=grupoDaFam(f,d);return `<div class="linha fam-dia"><div class="min"><b>${esc(f.nome)}</b><div class="sub">${esc(f.resp)}${a?` · ${a.estado==='confirmada'?'confirmada':'aguardando resposta'}`:''}</div></div>
+   <div class="card"><b>Famílias do dia</b>${fs.map(f=>{const a=f.agenda?.data===d?f.agenda:null,g=grupoDaFam(f,d);return `<div class="linha fam-dia"><div class="min"><b>${esc(f.nome)}</b><div class="sub">${esc(f.resp)}${a?` · ${a.estado==='confirmada'?'confirmada':'aguardando resposta'}`:''}</div>${passou?'':`<button class="mini-link perigo" type="button" data-tirar-ag="${f.id}" style="margin-top:4px">Tirar deste sábado</button>`}</div>
     <div class="dia-ctl"><input type="time" aria-label="Chegada na casa" data-hora-fam="${f.id}" data-dia="${d}" value="${a?.hora||''}" ${passou?'disabled':''}><select aria-label="Grupo" data-grupo-fam="${f.id}" data-dia="${d}" ${passou?'disabled':''}><option value="">sem grupo</option>${gs.map(x=>`<option value="${x.id}" ${g?.id===x.id?'selected':''}>${esc(x.nome)}</option>`).join('')}</select></div></div>`}).join('')||'<p class="vazio">Nenhuma família designada ainda.</p>'}
     ${passou?'':`<label class="f" style="margin-top:12px">Designar família para este sábado<select data-designar="${d}"><option value="">Escolha a família…</option>${livres.map(f=>`<option value="${f.id}">${esc(f.nome)}</option>`).join('')}</select></label>`}</div>
    ${gs.length?`<div class="grade" style="margin-top:14px">${gs.map(cardGrupo).join('')}</div>`:''}
@@ -359,7 +359,7 @@ document.addEventListener('click',async e=>{
   if(t.dataset.delDoacao)return apagar(()=>deleteDoc(doc(db,'doacoes',t.dataset.delDoacao)),'Lançamento apagado.');
   if(t.dataset.delFam)return apagar(()=>deleteDoc(doc(db,'familias',t.dataset.delFam)),'Família apagada.');
   if(t.dataset.delGrupo){const g=S.visitas.find(x=>x.id===t.dataset.delGrupo);return apagar(async()=>{for(const k of [g.token,g.tokenLider])if(k)await deleteDoc(doc(db,'links',k));await deleteDoc(doc(db,'visitas',g.id))},'Grupo apagado. As famílias continuam designadas para o sábado.')}
-  if(t.dataset.tirarAg){const fa=fam(t.dataset.tirarAg);return apagar(()=>salvarAgenda(fa,null),'Agendamento tirado.')}
+  if(t.dataset.tirarAg){const fa=fam(t.dataset.tirarAg);return apagar(async()=>{if(fa.agenda)await salvarAgenda(fa,null);else for(const g of S.visitas.filter(g=>g.data>=hoje()&&(g.familias||[]).includes(fa.id)))await moverFam(fa.id,g.data,'');render()},'Família tirada do sábado. A situação dela (visitada ou não) continua igual.')}
   if(t.dataset.delAcesso){const eq=S.acesso.equipe.filter((_,i)=>i!=t.dataset.delAcesso);return apagar(()=>salvarAcesso(eq),'Acesso retirado.')}
 });
 document.addEventListener('change',async e=>{
